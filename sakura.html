@@ -1,0 +1,4152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 150px;
+            --user-items-height: 250px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-main" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-main" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">main</span>
+                </label>
+                <label for="tab-info" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-info" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">info</span>
+                </label>
+                <label for="tab-other" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-other" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">other</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-　" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-　" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">　</span>
+                </label>
+                <label for="user-金魄 鴟梟 (こんぱく しきょう)" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-金魄 鴟梟 (こんぱく しきょう)" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">金魄 鴟梟 (こんぱく しきょう)</span>
+                </label>
+                <label for="user-弥山 巴 (みやま ともえ)" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-弥山 巴 (みやま ともえ)" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">弥山 巴 (みやま ともえ)</span>
+                </label>
+                <label for="user-KP" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-KP" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">KP</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <div class="messages-list">
+            <div class="tab-main user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #a14641;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            桜の花の匂いが、あの日嗅いだ甘さが、僕を同じ場所へと誘い込もうとしていた。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #a14641;" class="message-user-text">
+                            　
+                        </p>
+                        <p class="message-content-text">
+                            ¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨<br><br>CoC 6th<br>「桜の木の下から」<br><br>KPC - 弥山 巴<br>PC - 金魄 鴟梟<br><br>¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #a14641;" class="message-user-text">
+                            　
+                        </p>
+                        <p class="message-content-text">
+                            いつも通り、貴方は事務所へと帰宅する。<br>最近はやけに懐いていた彼が、当然のように出迎えるものだと思っていたかもしれない。<br>しかしその日、事務所の中はもぬけの殻だった。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #a14641;" class="message-user-text">
+                            　
+                        </p>
+                        <p class="message-content-text">
+                            普段なら施錠してあるはずの入口は開けっ放し。<br>電気も消さず、床には彼のスマートフォンが無惨に転がっている。<br><br>なにか、様子がおかしい。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「弥山くん」<br>ニュースを見ただろう、彼の姿が居ないことに呟く
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「…………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……君は、弱い子だ」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「僕の足で、迎えに行かなきゃならないのかな。もう、帰ってこないのかな……」<br><br>「…………僕たちは、出会えって良かった存在なのかな？」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……」<br>彼のスマートフォンを見ます。おそらく、投げ出された衝撃で割れてしまったものを見て
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……ねえ、僕は君に与えれること、出来なかったよ。僕は、支えになれるのだろうか」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……公園……桜が今、満開だったね」<br>公園に足を引きずりながら向かいます/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            　
+                        </p>
+                        <p class="message-content-text">
+                            真夜中の公園は、街灯の明かりに照らされた薄白く桜の花が、空の闇を覆い隠す天井のように広がっていた。<br>貴方は公園の中を彷徨い、やがて薄暗いベンチに座る弥山の姿を確認する。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            　
+                        </p>
+                        <p class="message-content-text">
+                            彼はただ何をするでもなく。俯いたまま微動だにしない。/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……弥山くん」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「僕は」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「不器用で、弱い」<br>「そして、僕は………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……支える約束、覚えているかい？」<br>「もし、もし厳しいと思うのならば、僕にぶつけてほしいんだ。何でも、君が望む形のものに僕は叶える。彼女には敵わないけれど…僕は、僕は…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            珍しく口ごもった様子で、ただ言葉を吐き出します/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「しょ、ちょう」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            　
+                        </p>
+                        <p class="message-content-text">
+                            話しかけられて、ようやく気づいたといった様子で顔を上げる。<br>その目に涙はなく、しかしまた光も見られなかった。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            　
+                        </p>
+                        <p class="message-content-text">
+                            素人目にでもわかるほどに、彼は今──崩壊の危機に貧している様子だった。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「所長、どうして、ここに」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「僕は……どうして、なんで……」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……5ヶ月の休暇の話、覚えているかい？」<br>「君には重すぎることをしてしまった」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「…………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……栞さんのこと、僕は何も言う資格はないよ。むしろ、何も言えない、僕は彼女と君を救えなかった。それが事実だ」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……桜、覚えてないかもだけど。」<br><br>そう言いながら大きな一本桜を見上げて<br>「…君が事務所に来た時にも桜の匂いがしていたんだ。もしかしたら、僕はその時に…失敬」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「や、や、やだ、嫌……いやだ……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「な、にも聞きたくない！ なにも、ききたくない……やだ、嫌だ、嫌……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #a14641;" class="message-user-text">
+                            　
+                        </p>
+                        <p class="message-content-text">
+                            何かに怯えるように体を縮こめて、耳を塞ぎながらいやいやと子供のように頭を振っている。/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「弥山くん」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「これが現実だ」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「頭を振っても、叫んでも、事実は変わらない」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「だから当たるのは僕にしなさい、君はよく頑張った。もう休んでいいんだよ」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「────ッ」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「ぁ、や、やだ！ 捨てないで！ 捨てないで……ッ！ しょ、しょちょう、やだ、お願い……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「嫌、嫌だ、あ、ぁああ、や、すてないで、一人にしないで……」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「…………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……弥山くん、君は」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「今助手としていられるのかい？君は混乱しているんだ……栞さんのいない今、次に頼れるのが僕だけなんだろう」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「一時の感情に身を任せ、破滅するのは君だ。僕は…僕は今自分の足で立っていたい。だから代わりなんていらないんだ」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「君が今後、どうしたいのか」<br>「……それをゆっくり考えてみなさい」<br><br>優しく頭を撫でます/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「……いらない？」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「もう、所長は自分の脚で動けるし、栞も見つかった、から、もう、僕は、いらないですか」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「……………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「あは、あはは、はは」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「ぼく、は、所長がいないと、生きていけないのに……」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「弥山くん、落ち着きなさい」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            CCB<=60 【精神分析】 (1D100<=60) ＞ 44 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「君は今、不安定なんだよ。大丈夫、別に捨てたりなんてしないよ。君のことを必要だから他の助手はとらないよ」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「………どうしたら、君は落ち着くのかな。僕は…こういう場合苦手で、君の方がそういうのは得意で…今夜は冷えるよ。帰ろう、弥山くん」<br><br>足を折り曲げて、座り込むと目線を合わせようとします/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「ほ、ほんと……？ 本当に……？」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「所長、しょちょう、お願いです……僕、怖くて、寂しくて、全部、が、辛くて、もう、ダメなんです……ね、お願いだから……手、手を握って……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            目線があうと安心したように息をついて、金魄さんに手を伸ばそうとします。/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……」<br>黙って手をしっかり握ります。自分の体温は低いので、両手で包んで優しく握りしめます
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「…猫のようだね。いや、迷子の子供のようだね」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……このままいてあげるから、落ち着いたら事務所…君の家に帰ろう」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「ぅ……うう、う……っ」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            ぎゅ、と手を握りしめて、何度も小さく頷きます。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #a14641;" class="message-user-text">
+                            　
+                        </p>
+                        <p class="message-content-text">
+                            しばらくして、多少落ち着きを取り戻した弥山を連れて貴方は事務所へと戻った。<br>時計は既に頂点を過ぎているが、しばらくは眠れそうにない、と思うかもしれない。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「ココアでもいれようか」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……まだ、手を離したくない？」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「……だ、いじょうぶです。もう……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            ヨロヨロとソファに近寄って、力なく座ります。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            ココアをそっと机に置いて、自分は…考えた末に隣に座り、ココアを飲むまでそっと手を重ねます/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「……所長、」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「……所長、僕……どうして、思い出しちゃったんだろう。忘れてしまえばよかったのに、それで、ずっと、なにも知らないままで、いたかった」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「知ってたんです、僕……栞がもういないこと、知ってて、でも、目を背けたくて……栞との思い出がある場所に居続けたら、気が狂ってしまいそうだったから」<br>「だから、所長のところに逃げ込んで。自分に嘘を、ついて、栞はまだ生きてるんだって、思い込もうと、して……でも、もうそれもできなくなっちゃった……」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「記憶は忘却してしまうけど、僕は記憶は忘却してしまうと悲しくなってしまう」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「それくらくいなら僕は傷に残った方がいい。傷になれば、それを見る度に思い出す。忘れたかったことも、何もかも」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……栞さんのことは忘れないであげてほしい。何も出来ないじゃない、今君が出来ることは栞さんのことを受け入れるんじゃない。まずは自分の感情を整理して、自分の中の自分を安定させることだ」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「……僕の、感情を……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「僕は……僕、は……ぃ、いま、一番思うのは、怖さです」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「栞が、もういないことが決まった今、僕はもう……所長の元で働く理由が、なくなってしまった。もう契約期間は終わってしまった。だから、所長はもう僕を捨ててもいいんだ……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「僕は……もう……壊れかけてる……こんな、こんな人間が、側にいたら、所長の負担が増えるばかりだし。でも、僕は……僕、は」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「もう、所長がいないと生きていけないんです……所長がいてくれれば、僕は大丈夫なんだって思える。所長が話しかけてくれるだけで、僕は寂しくなくなる。所長に、触られると安心する……でも、でも……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「でも……」<br>「所長は、僕が貴方に依存することを、許さない……それが、怖い……」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「…うん、うん」<br>何度も頷きながら、優しく頭に触れます
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「…君は」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「誰かに依存しないと生きていけないの？栞さんがいなくなった後、もし僕が…栞さんが…という考えをしていた。それで思ったよ」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「…僕は責任を取る。あ、違う…この言い方は難しい。誤解を生む…ええと、勘違いしないでほしい、これも違う…ううん」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……僕は依存と思われたことないし、君はいつも通りでいたじゃないか。それでいいんじゃないのかな。僕は負担に思うことは何も今までないし、今後も後悔することはないし、嘘だって吐かない」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「だって僕がそうしたいから、君を選んで、ここに連れ帰ってきたんだよ」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「もし負担なら捨て置ける、君はよく知ってるでしょ」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「…………」<br>頭に触れられた手に安心したように息を吐きます。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「……僕は、弱いんです。弱くて、心が脆くて、もう、ダメなんです。いつも不安で、怖くて、寂しい……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「…………嬉しい、です。嬉しい、所長は、僕を置いていかない。側に置いてくれる……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「なんでも言うことを聞きます。なんでも……所長が望むならなんだってします。だから、側にいてください……貴方だけが僕の希望なんです……」<br>所長から触れてくれたことに気を良くしたのか、スリスリと身を寄せてきます。/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……君の」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「君が何を僕に求めているのか、その感情は…やはり理解しがたい…そもそも僕はそういう感情にとても疎い」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「だから君が今僕にどう思うのか、分からない…もしかしたら他に希望を見出せる人がこの先現れるかもしれない。だから…それまで僕は…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「傍にいるよ、今はこれしか言えない…あと」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「香水臭い」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            ファブリーズを掛けます/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「…………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「ケホ……ファブリーズのほうが余程僕は臭いと思いますけど……わかりました、香水をつけるのはやめます。それでいいですか？」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「そしたら、嫌がらないでくれますか？」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……いつもの君らしくないね」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「これが、依存ってこと？」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「別に、所長の嫌がることをしたくないだけです」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「所長の隣にいると安心するんです、だから、匂いが原因で近づけないなら改善します。それだけ……」<br>金魄さんに寄り添いながら、ようやくココアを手にします。<br>ふーふーとしっかり冷ましています/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「………それが本来の君なの？」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「僕の知ってる君は違うから、そんな姿見たら少し考えたくなってしまうね」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「…何というか、もっといつもの生意気さが無いと…いいや、今の君はそれでこその君なのかも」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「でも僕は憎まれ口を叩きながらもなんやかんやとやってくれる褒めてと内心抱える強気な君の方が好きだったかも」<br><br>自分も珈琲を飲みながら「今の君はまだ慣れない」と付け足し/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「えっえっ」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「じゃ、じゃあやめます！ えっと……えっと……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            慌てて距離をとってアワアワしています。/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……ふ」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「君ってそんな顔もするんだ。弱いのも、隠してたんだね」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……」<br>おもむろに手を広げてみます
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「…こういうのが安心するって本で読んだんだけど」<br>抱き締めたい、というのを試したいという様子だ/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「えっ、あの、あ、」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「しょ、所長がしたいっていうなら、仕方ないですね。特別、ですからね」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            戸惑いながらゆっくり近づき直して、その腕の中に収まりにいきます。<br>抱かされ慣れてはいないのでしょう、どう体を寄せればいいのか戸惑っています。/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……よしよし」<br>まるで泣いた子供をあやすように、よしよし…と一定のリズムでぽん、と叩いて優しく引き寄せます。確か読んでいた小説でこんな場面があった、きっとこうした方がいいんじゃないかと真似をする。しかし抱きしめるのは妹以外が初めてなので、何処かぎこちない/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            子猫のように金魄さんの肩に顔を埋めます。<br>ゆっくりと深呼吸をしている姿から、余程安心したことがわかるでしょう。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「……僕が、」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「僕が、所長に抱く気持ちは、ただの代替なんでしょうか」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「世界は冷たくて、寒くて、痛くて……でも、所長だけが守ってくれる……所長だけが……僕を生かしてくれる……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「好きです、所長……」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……そっか」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「僕みたいなのを好いてくれてありがとう」<br>「でも……こういう時って「僕もだよ」て言うのが普通なんだっけ。でも僕、君に恋愛感情は持ってないよ」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……どうしたらいい？これだと、支えにならない」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……あ、また言葉、間違えたかな……」<br><br>無表情ながらに何処か不思議そうな顔をして弥山さん弥山さんをとりあえず抱きしめています/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「いいです、いいんです……所長は僕を拒まないでしょう？ この前だって、僕に……キスしてくれたから」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「もし所長が気持ち悪いと思うなら、その時はちゃんと諦めますから……なにも、変わりません。僕は貴方が側に置いてくれる限り、貴方の助手でいます」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「側にいてくれるだけでいい……」<br>ぎゅ、と金魄さんの服を掴みます。/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……傍にはいるよ」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「気持ち悪い、はどうだろう…あんまり思ったことないかも…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「あ、あんまりというか恋とかそういうのとか本でしか知らなくて妹にも凄い怒られたことあって………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「あ」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「僕のことが好き？ならもう女性との軽率に遊ぶのはやめる？」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「あ、は、はい。はい、やめろって所長が言うなら、やめます」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「……寂しくて、おかしくなっちゃうかもしれないけど、でも、やめます……」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「無理はしてほしくないからいいよ、我慢しなくて」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「…そんなに怖いものなのかな、多分君のその感情」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……何でもない、香水の匂い来たらファヴリーズだからね、それは変わらない」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「…何も変わらないんだよ、この事務所も、僕たちも」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「ただ、ほんの少しだけ君が素直になったのかもしれないね。少しずつ、上手く受け止めていこう」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「は、い……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「所長……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「貴方を巻き込んで、ごめん、なさい……」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「なんで？」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「謝るのは僕の方だよ、見つけれなくて…ごめんね」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「…………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「……所長が謝ることは何もないです。それでも謝るしかないなら、僕は、全部赦します」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「所長が抱えてる罪悪感も、苦しみも、僕は全部赦しますから、だからもう謝らなくていいんです……」<br>そっと背中に腕をまわして抱きしめます。/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……うん」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……お礼は、言えない。でも、君がそう言ってくれるのは、何だか嬉しい」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「…？」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「何だかずっと心が……いや、感情の整理が付けるのが今びっくりしてるのかも。僕。もしかしてまた夢でも見てるのかな」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「まさか。これが夢だったら、僕泣いちゃいますよ」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「…………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「……鈍感なのか、ピュアなのか、それとも無関心なのか、全然わからないな」<br>小声で呟きます。/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            CCB<=75 【聞き耳】 (1D100<=75) ＞ 36 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「何が？」<br>小声を拾って
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「よく分からず屋とか、デリカシーが無いとは言われるよ」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「ええ、そうですね」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「配慮に欠けているというより、単純に……知らないだけなんでしょうけど」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「純粋無垢すぎるのもなかなか考えものですね」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……あ」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「こういう時に僕読んだことある」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「『俺色に染めがいがあるぜ…』みたいなのを読んだことある。もしかしてそれ？」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「な、な、な、」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「所長って普段どんな本読んでるんですか！？」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「べ、べ……別にそんなふうには思わないですけど！！」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「……思わないですから！」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……え？色んな本」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……弥山くん？どうしてそんなに焦るんだい？君こそこういう台詞言いそうじゃない」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            CCB<=60 【心理学】 (1D100<=60) ＞ 16 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……思うんだ」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「…………ッ」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「じゃ、じゃあ……僕が染めてもいいんですか？」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「どうせまた女臭いとかいって嫌がるんでしょう？」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「良いんじゃないかな」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「君に染められた僕、興味ある」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……でも僕こんな風だから、そのうち飽きちゃうよ」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「う、うぅ、ううぅ……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「あ、飽きさせないです。僕が、絶対に」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「覚悟してくださいね、所長……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「うん」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「ところで思ったんだけど、君のそういう気持ち？依存？っていつからあったの。僕に当たり強かったのに意外……君ってもしかして」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            栞さんより僕を優先させたんじゃないか、と言いかけて
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……ところでお付き合い？片想い？今この関係性ってどうなんだろう。僕は君に恋愛感情を今は持ててないけど、君っていつもどんな恋愛してるの？……あ、女性の話だからかなり遠回しにお願い」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「……わ、かりません。でも……でも」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「僕は、栞を、本当はずっと諦めていました。生きているわけがないって。生きていたとして、再会できていないならそれが答えだって。それでも生きるために嘘をついて……所長に探させて」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「生きるために栞を探していた。でも、いつからか、所長と探偵業をすることに生きる楽しみを見出していました。もちろん面倒なことも厄介なこともたくさんありますよ、でも……所長といる間は、生きていることが苦しくなくなる、」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「いつからか、そう思ったんです」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「……僕が普段しているのは、恋愛なんかじゃありませんよ。ただの解消です。お腹が空くからご飯を食べる。満たされないから満たされにいく。ただそれだけ」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「…………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「そっか、君はずっと……栞さんのことを」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……あの研究所で君は、まだ諦めきれなかったんじゃないのかい」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……もし、死んでたとしても……」<br>「死者蘇生は禁忌だ、それでも…一度この人と人生を共にしたいと思った人なんでしょ？なら次に僕を選ぶのはどうなのかと思うけど…本当に他の人が見つかったら別を選びなさい。若気の至りで人生棒に振るものじゃないよ」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……満たされてないのかな、どうしたら満たされるんだろう。僕はカナと出会ったり音楽を聴くと癒される。でも、ふとやっぱり足を痛めた事を愛おしく思うし、刑事時代の相棒や下水道から救ってくれた彼を思い出す」<br><br>「……お互い未練があるのかな」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「……ダメ、ですか？ 所長といると安心する、所長だけが生きる希望になってくれる。他の人じゃダメなんです。他の誰かじゃない、所長がいい」<br>甘えるようにすりすりと身を寄せます。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「栞のことも好きです。結婚するものだとも、思いました。でも、今の僕にとって、栞は……心の傷なんです。痛みなんです。その痛みから、守ってくれるのが所長なんだ……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「僕の心には穴が空いてしまったんです。きっと、大きな大きな穴が。だから何を注いでも満たされない。何をしても意味がないんです。言ったでしょう？ 僕はもう壊れかけてるって」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「大丈夫ですよ。僕が、これからの所長の人生をいいものにしてみせます。満たされなかったとしても、昔のことを思い出す暇なんかないくらい、忙しくて面倒な日々を」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……蛇なのに猫みたいだ、にゃおって鳴きそう」喉を軽く撫でます
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「…それだけ聞くと、僕が君を満たすべきだと思ってるんだけど。そうか、悲恋モノでもそういうのはある…いや、ごめん。失言だったね」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「壊れたものは戻らない。僕の脚みたいにね…でも、それを愛おしいとも思うのも傷を愛おしく思うのもありなんじゃ…ないのかな…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「…いいな、そういうの。凄くかっこいい…今の弥山くん、一番かっこよく見えた。あ、こういうのをドキッとするっていうの？僕が女の子だったらきっと好きになってた。多分」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「……所長はもう、僕を満たしてくれているでしょう？ ほら、今だって……凄く安心してる。ずっと側にいたい……ああ、こういうことをいうから余計に気負わせてしまうんですよね。自重します」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「そうですね。僕は所長の脚が好きですよ。不謹慎ですが、所長の脚が悪いほど、僕がお役に立てますから」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「……ええ、そうでしょう？　女の子を口説くのは得意分野ですから。でも……」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「…でも？何」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「僕は僕の脚を愛おしいと思うよ。だってこれは記憶であり、忘れない傷だからね。それで、君は何を言いたいんだい？」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「え、あ、その……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「好きな人に想いを伝えることだけは、いつもうまくいかないなって、そう思っただけです……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「僕が本当に好きな人達は、いつも……僕が何をしても、手が届かないところにいる……それでも僕は、構わないけれど……」<br>顎を撫でる手を取って指を絡めます。/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「栞さんの時もそうだったんだね…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「君も案外不器用なんだね、でも確かにそうかも…」<br><br>絡める指を見ながら<br>「…そういう子は依存しやすい、心のコントロールも苦手な傾向にある」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「随分弱気だね、君らしくない…いや、僕が考えすぎ…理想を押し付けていたのかもしれない」<br><br>「…押し付け、じゃないかな…理想、じゃない…印象…？ううん」<br><br>指をにぎにぎしながら考え/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「いや、ですか？ 所長は意地悪で生意気な僕のほうが好き？」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「弱くて……誰かがいないと生きていけない僕は、嫌いですか？」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「別に」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「君がそうしたいなら、それでいいんじゃないかな」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「僕は君の考えを否定しないよ……本当に何で僕なんだろう？不思議」/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-弥山 巴 (みやま ともえ)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #328131;" class="message-user-text">
+                            弥山 巴 (みやま ともえ)
+                        </p>
+                        <p class="message-content-text">
+                            「ふふ……嬉しいです」<br>身を寄せてすっかり甘えきります。/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「…………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「……なんか慣れないね、こういうの」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-金魄 鴟梟 (こんぱく しきょう)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            金魄 鴟梟 (こんぱく しきょう)
+                        </p>
+                        <p class="message-content-text">
+                            「嫌とかじゃなくて、君って本当は弱い子でも頑張っていたんだね。お疲れ様」<br><br>頭を軽く撫でます……多分これで合ってる……？となりながら/
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            夜が更けていく。<br>三月の夜半。薄寒い世界の中、身を寄せ合って暖を取る。<br>彼の口から、ほうっと安堵するような吐息が漏れる。<br>それは、まるでようやく見つけた安息地に身を投げ出すような、そんな仕草にも見えた。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            穴の空いた器に何を注ごうと、流れ出てしまうものは流れ出す。<br>それでも、少しでも長く留まっていてくれることを願いたい。<br><br>月が、夜空の天辺に座していた。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            桜の木の下から︰END
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+</body>
+</html>
