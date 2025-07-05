@@ -1,11 +1,91 @@
-// app.js: TRPGログ整形ツールの振る舞い
-// norobot メタタグとスクリプトを挿入し、整形・コピー・ダウンロード、list.html生成を扱う
-
 document.addEventListener("DOMContentLoaded", () => {
-  // --- パーツ1：HTML整形・コピー・ダウンロード ---
-  document.getElementById("formatBtn").addEventListener("click", () => {
+  // CSRF トークン取得
+  function getCsrfToken() {
+    const match = document.cookie.match(new RegExp('(^| )XSRF-TOKEN=([^;]+)'));
+    return match ? decodeURIComponent(match[2]) : '';
+  }
+
+  // --- GitHub OAuth / コミット機能 ---
+  const githubConnectBtn = document.getElementById("githubConnectBtn");
+  const authSection = document.getElementById("authSection");
+  const repoSettings = document.getElementById("repoSettings");
+  const githubUploadBtn = document.getElementById("githubUploadBtn");
+  const githubStatus = document.getElementById("githubStatus");
+
+  // OAuth 認証開始
+  githubConnectBtn.addEventListener("click", () => {
+    window.location.href = "/auth/github";
+  });
+
+  // 認証状態チェック
+  fetch("/api/auth/status", {
+    credentials: 'include',
+    headers: { 'X-CSRF-Token': getCsrfToken() }
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.authenticated) {
+        authSection.style.display = "none";
+        repoSettings.style.display = "block";
+      } else {
+        authSection.style.display = "block";
+        repoSettings.style.display = "none";
+      }
+    })
+    .catch((err) => {
+      console.error("Auth status error:", err);
+    });
+
+  // GitHub へコミット
+  githubUploadBtn.addEventListener("click", async () => {
+    const out = document.getElementById("formattedOutput").textContent;
+    const owner = document.getElementById("ownerInput").value.trim();
+    const repo = document.getElementById("repoInput").value.trim();
+    const path = document.getElementById("pathInput").value.trim();
+
+    if (!out) return alert("まずは「修正」ボタンで整形してください");
+    if (!owner || !repo || !path) {
+      return alert("リポジトリ情報をすべて入力してください");
+    }
+
+    githubStatus.textContent = "送信中...";
+    try {
+      const formData = new FormData();
+      const blob = new Blob([out], { type: "text/html" });
+      formData.append("htmlFile", blob, path.split("/").pop());
+      formData.append("owner", owner);
+      formData.append("repo", repo);
+      formData.append("path", path);
+
+      const res = await fetch("/api/user/upload", {
+        method: "POST",
+        credentials: 'include',
+        headers: { 'X-CSRF-Token': getCsrfToken() },
+        body: formData,
+      });
+      const result = await res.json();
+      if (result.ok) {
+        githubStatus.innerHTML =
+          '<div class="alert alert-success">GitHub へのコミットに成功しました！</div>';
+      } else {
+        githubStatus.innerHTML = `<div class="alert alert-danger">エラー: ${result.error}</div>`;
+      }
+    } catch (error) {
+      console.error(error);
+      githubStatus.innerHTML =
+        '<div class="alert alert-danger">通信エラーが発生しました</div>';
+    }
+  });
+
+  // --- HTML 整形・ローカル保存機能 ---
+  const formatBtn = document.getElementById("formatBtn");
+  const downloadBtn = document.getElementById("downloadBtn");
+
+  formatBtn.addEventListener("click", () => {
     const fileInput = document.getElementById("uploadHtml");
-    if (!fileInput.files.length) return alert("ファイルを選択してください");
+    if (!fileInput.files.length)
+      return alert("整形したい HTML ファイルを選択してください");
+
     const reader = new FileReader();
     reader.onload = (e) => {
       let html = e.target.result;
@@ -20,93 +100,41 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsText(fileInput.files[0]);
   });
 
-  document.getElementById("copyFormattedBtn").addEventListener("click", () => {
-    const out = document.getElementById("formattedOutput").textContent;
-    navigator.clipboard.writeText(out);
-    alert("コピーしました");
-  });
-
-  document.getElementById("downloadBtn").addEventListener("click", () => {
+  downloadBtn.addEventListener("click", () => {
     const out = document.getElementById("formattedOutput").textContent;
     const filename =
-      document.getElementById("filenameInput").value || "test.html";
+      document.getElementById("filenameInput").value.trim() || "test.html";
+    const linkname =
+      document.getElementById("linknameInput").value.trim() || filename;
+
+    if (!out) return alert("まずは「修正」ボタンで整形してください");
+
+    // Blob ダウンロード
     const blob = new Blob([out], { type: "text/html" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = filename;
     a.click();
     URL.revokeObjectURL(a.href);
-    // localStorage に保存＆リスト更新
-    const files = JSON.parse(localStorage.getItem("generatedFiles") || "[]");
-    if (!files.includes(filename)) {
-      files.push(filename);
+
+    // localStorage に記録
+    const files = JSON.parse(
+      localStorage.getItem("generatedFiles") || "[]"
+    );
+    const entry = { filename, linkname };
+    if (!files.some((f) => f.filename === filename)) {
+      files.push(entry);
       localStorage.setItem("generatedFiles", JSON.stringify(files));
-      appendToGeneratedList(filename);
+      appendToGeneratedList(entry);
     }
   });
 
-  // --- パーツ2：list.html 生成・コピー・ダウンロード ---
-  const formatListBtn = document.getElementById("formatListBtn");
-  const copyListBtn = document.getElementById("copyListBtn");
-  const downloadListBtn = document.getElementById("downloadListBtn");
-  const listPre = document.getElementById("listOutput");
-
-  formatListBtn.addEventListener("click", () => {
-    const files = JSON.parse(localStorage.getItem("generatedFiles") || "[]");
-    let html = `<!DOCTYPE html>
-  <html lang="ja">
-    <head>
-      <meta charset="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <title>目次 - TRPGログ整形サイト</title>
-      <!-- Bootstrap CSS -->
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-      <!-- norobot スクリプト -->
-      <script src="norobot.js"></script>
-    </head>
-    <body>
-      <div class="container py-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h1 class="mb-0">目次</h1>
-          <a href="index.html" class="btn btn-outline-secondary">トップへ戻る</a>
-        </div>
-        <ul class="list-group">
-  `;
-    if (files.length === 0) {
-      html += `        <li class="list-group-item">まだファイルが生成されていません。</li>\n`;
-    } else {
-      files.forEach((f) => {
-        html += `        <li class="list-group-item"><a href="${f}">${f}</a></li>\n`;
-      });
-    }
-    html += `      </ul>
-      </div>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    </body>
-  </html>`;
-    listPre.textContent = html;
-  });
-
-  copyListBtn.addEventListener("click", () => {
-    const txt = listPre.textContent;
-    navigator.clipboard.writeText(txt);
-    alert("コピーしました");
-  });
-
-  downloadListBtn.addEventListener("click", () => {
-    const txt = listPre.textContent;
-    const blob = new Blob([txt], { type: "text/html" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "list.html";
-    a.click();
-    URL.revokeObjectURL(a.href);
-  });
-
-  // --- パーツ3：作成済みファイル一覧表示 ---
+  // 作成済み一覧のレンダリング
   const listContainer = document.getElementById("generatedList");
   if (listContainer) {
-    const files = JSON.parse(localStorage.getItem("generatedFiles") || "[]");
+    const files = JSON.parse(
+      localStorage.getItem("generatedFiles") || "[]"
+    );
     if (files.length === 0) {
       const li = document.createElement("li");
       li.className = "list-group-item";
@@ -117,11 +145,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // --- 共通関数：リストに要素追加 ---
-  function appendToGeneratedList(filename) {
+  function appendToGeneratedList({ filename, linkname }) {
     const container = document.getElementById("generatedList");
     if (!container) return;
-    // 「まだ…」表示をクリア
     if (
       container.children.length === 1 &&
       container.children[0].textContent.includes("まだ")
@@ -132,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
     li.className = "list-group-item";
     const a = document.createElement("a");
     a.href = filename;
-    a.textContent = filename;
+    a.textContent = linkname || filename;
     li.appendChild(a);
     container.appendChild(li);
   }
