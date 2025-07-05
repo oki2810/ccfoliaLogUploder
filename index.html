@@ -1,9 +1,3 @@
- (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
-diff --git a/index.html b/index.html
-index 9cdb5acdd7eeb6e72d8a8656d34184a716870c4e..e9aebefe06a4feca5c818ce2a782df0a2551ab2f 100644
---- a/index.html
-+++ b/index.html
-@@ -1,39 +1,53 @@
  <!DOCTYPE html>
  <html lang="ja">
    <head>
@@ -58,6 +52,3 @@ index 9cdb5acdd7eeb6e72d8a8656d34184a716870c4e..e9aebefe06a4feca5c818ce2a782df0a
              <input
                type="text"
                id="filenameInput"
- 
-EOF
-)
