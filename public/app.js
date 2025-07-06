@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const viewProjectBtn   = document.getElementById("viewProjectBtn");
   const githubUploadBtn  = document.getElementById("githubUploadBtn");
   const githubStatus     = document.getElementById("githubStatus");
+  const githubDisconnectBtn = document.getElementById("githubDisconnectBtn");
 
   const uploadHtml       = document.getElementById("uploadHtml");
   const formatBtn        = document.getElementById("formatBtn");
@@ -25,6 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // リンク名入力に合わせてコミットパスを更新
   const syncPath = () => {
+    // 半角英数字以外は除去
+    linknameInput.value = linknameInput.value.replace(/[^0-9A-Za-z]/g, "");
     const name = linknameInput.value.trim() || "test";
     pathInput.value = `log/${name}.html`;
   };
@@ -34,6 +37,20 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- GitHub OAuth 開始 ---
   githubConnectBtn.addEventListener("click", () => {
     window.location.href = "/api/auth/github";
+  });
+
+  githubDisconnectBtn.addEventListener("click", async () => {
+    try {
+      await fetch("/api/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: { "X-CSRF-Token": getCsrfToken() }
+      });
+    } catch (err) {
+      console.error("Logout error:", err);
+    } finally {
+      window.location.reload();
+    }
   });
 
   // 認証状態チェック
@@ -52,11 +69,13 @@ document.addEventListener("DOMContentLoaded", () => {
             : "GitHub連携中";
           loginInfo.style.display = "block";
         }
+        githubDisconnectBtn.style.display = "inline-block";
         updateViewBtn();
       } else {
         authSection.style.display = "block";
         repoSettings.style.display = "none";
         if (loginInfo) loginInfo.style.display = "none";
+        githubDisconnectBtn.style.display = "none";
       }
     })
     .catch(err => console.error("Auth status error:", err));

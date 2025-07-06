@@ -35,6 +35,13 @@
             </button>
           </div>
           <p id="loginInfo" class="mt-2" style="display: none;"></p>
+          <button
+            id="githubDisconnectBtn"
+            class="btn btn-outline-danger mt-2"
+            style="display: none;"
+          >
+            GitHub 連携解除
+          </button>
           <div id="repoSettings" style="display: none;">
             <div class="row mb-3">
               <div class="col">
@@ -98,7 +105,9 @@
               type="text"
               id="linknameInput"
               class="form-control"
-              placeholder="例: sample_scenario"
+              pattern="[0-9A-Za-z]*"
+              title="半角英数字のみ"
+              placeholder="例: sample123"
             />
           </div>
           <button id="formatBtn" class="btn btn-secondary me-2">修正</button>
