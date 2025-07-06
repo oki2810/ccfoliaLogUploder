@@ -1,43 +1,52 @@
-import axios from "axios";
+// api/auth/github-callback.js
 import cookie from "cookie";
-import { verifyState } from "../state-store.js";
 
 export default async function handler(req, res) {
-  try {
-    const { code, state } = req.query;
-    if (!code || !state) {
-      return res.status(400).send("Missing code or state");
-    }
+  const { code, state } = req.query;
+  if (!code || !state) {
+    return res.status(400).send("Missing code or state");
+  }
 
-    // ← ここが旧来の split/map/Object.fromEntries ではなく…
-    const cookies = cookie.parse(req.headers.cookie || "");
+  // ブラウザから送られた oauth_state クッキーを読み込む
+  const cookies = cookie.parse(req.headers.cookie || "");
+  if (state !== cookies.oauth_state) {
+    return res.status(403).send("Invalid state");
+  }
 
-    if (state !== cookies.oauth_state || !verifyState(state)) {
-      return res.status(403).send("Invalid state");
-    }
-
-    const tokenRes = await axios.post(
-      "https://github.com/login/oauth/access_token",
-      {
+  // GitHub からアクセストークンを取得
+  const tokenRes = await fetch(
+    "https://github.com/login/oauth/access_token",
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
         client_id: process.env.GH_CLIENT_ID,
         client_secret: process.env.GH_CLIENT_SECRET,
         code,
-      },
-      { headers: { Accept: "application/json" } }
-    );
-
-    res.setHeader(
-      "Set-Cookie",
-      cookie.serialize("accessToken", tokenRes.data.access_token, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: true,
-        path: "/",
-      })
-    );
-    return res.redirect("/");
-  } catch (err) {
-    console.error("github-callback error:", err);
-    return res.status(500).send("Internal Server Error");
+      }),
+    }
+  );
+  const { access_token } = await tokenRes.json();
+  if (!access_token) {
+    return res.status(500).send("Failed to get access token");
   }
+
+  // 古い state クッキーを削除しつつ、access_token をセット
+  res.setHeader("Set-Cookie", [
+    cookie.serialize("access_token", access_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+    }),
+    cookie.serialize("oauth_state", "", {
+      maxAge: 0,
+      path: "/",
+    }),
+  ]);
+
+  return res.redirect("/");
 }
