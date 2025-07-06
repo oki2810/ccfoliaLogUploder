@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("path", path);
       formData.append("linkText", linkText);
 
-      const res = await fetch("/api/user/upload", {
+      const res = await fetch("/api/upload", {
         method: "POST",
         credentials: "include",
         headers: { "X-CSRF-Token": getCsrfToken() },
