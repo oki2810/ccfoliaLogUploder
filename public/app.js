@@ -1,3 +1,4 @@
+// app.js
 document.addEventListener("DOMContentLoaded", () => {
   // CSRF トークン取得
   function getCsrfToken() {
@@ -5,10 +6,11 @@ document.addEventListener("DOMContentLoaded", () => {
     return match ? decodeURIComponent(match[1]) : "";
   }
 
-  // --- 要素参照 ---
+  // --- 要素取得 ---
   const githubConnectBtn = document.getElementById("githubConnectBtn");
   const authSection      = document.getElementById("authSection");
   const repoSettings     = document.getElementById("repoSettings");
+  const loginInfo        = document.getElementById("loginInfo");
   const ownerInput       = document.getElementById("ownerInput");
   const repoInput        = document.getElementById("repoInput");
   const viewProjectBtn   = document.getElementById("viewProjectBtn");
@@ -23,9 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const formattedOutput  = document.getElementById("formattedOutput");
   const listContainer    = document.getElementById("generatedList");
 
-  // --- 1) OAuth開始 ---
+  // --- GitHub OAuth 開始 ---
   githubConnectBtn.addEventListener("click", () => {
-    // API ルートにリダイレクトして OAuth を開始
     window.location.href = "/api/auth/github";
   });
 
@@ -39,18 +40,28 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.authenticated) {
         authSection.style.display = "none";
         repoSettings.style.display = "block";
+        if (loginInfo) {
+          loginInfo.textContent = data.username
+            ? `GitHub連携中: ${data.username}`
+            : "GitHub連携中";
+          loginInfo.style.display = "block";
+        }
         updateViewBtn();
+      } else {
+        authSection.style.display = "block";
+        repoSettings.style.display = "none";
+        if (loginInfo) loginInfo.style.display = "none";
       }
     })
     .catch(err => console.error("Auth status error:", err));
 
-  // --- 2) プロジェクト公開ページへのリンク 更新 ---
+  // プロジェクト公開ページリンク更新
   function updateViewBtn() {
     const owner = ownerInput.value.trim();
     const repo  = repoInput.value.trim();
     if (owner && repo) {
-      viewProjectBtn.onclick = () =>
-        window.open(`https://${owner}.github.io/${repo}/`, "_blank");
+      const url = `https://${owner}.github.io/${repo}/`;
+      viewProjectBtn.onclick = () => window.open(url, "_blank");
       viewProjectBtn.style.display = "inline-block";
     } else {
       viewProjectBtn.style.display = "none";
@@ -59,17 +70,16 @@ document.addEventListener("DOMContentLoaded", () => {
   ownerInput.addEventListener("input", updateViewBtn);
   repoInput.addEventListener("input", updateViewBtn);
 
-  // --- 3) GitHub へのコミット + index.html 更新 ---
+  // --- GitHub へのコミット ---
   githubUploadBtn.addEventListener("click", async () => {
-    const out      = formattedOutput.textContent;
-    const owner    = ownerInput.value.trim();
-    const repo     = repoInput.value.trim();
-    const path     = document.getElementById("pathInput").value.trim();
+    const out   = formattedOutput.textContent;
+    const owner = ownerInput.value.trim();
+    const repo  = repoInput.value.trim();
+    const path  = document.getElementById("pathInput").value.trim();
     const linkText = linknameInput.value.trim();
 
-    if (!out)    return alert("まずは「修正」ボタンで整形してください");
-    if (!owner || !repo || !path)
-                 return alert("リポジトリ情報をすべて入力してください");
+    if (!out) return alert("まずは「修正」ボタンで整形してください");
+    if (!owner || !repo || !path) return alert("リポジトリ情報をすべて入力してください");
 
     githubStatus.textContent = "送信中…";
     try {
@@ -84,31 +94,27 @@ document.addEventListener("DOMContentLoaded", () => {
         method: "POST",
         credentials: "include",
         headers: { "X-CSRF-Token": getCsrfToken() },
-        body: formData
+        body: formData,
       });
       const result = await res.json();
       if (result.ok) {
-        githubStatus.innerHTML =
-          '<div class="alert alert-success">コミットに成功しました！</div>';
+        githubStatus.innerHTML = '<div class="alert alert-success">GitHub へのコミットに成功しました！</div>';
       } else {
-        githubStatus.innerHTML =
-          `<div class="alert alert-danger">エラー: ${result.error}</div>`;
+        githubStatus.innerHTML = `<div class="alert alert-danger">エラー: ${result.error}</div>`;
       }
     } catch (err) {
       console.error(err);
-      githubStatus.innerHTML =
-        '<div class="alert alert-danger">通信エラーが発生しました</div>';
+      githubStatus.innerHTML = '<div class="alert alert-danger">通信エラーが発生しました</div>';
     }
   });
 
-  // --- 4) HTML 整形・ローカル保存 ---
+  // --- HTML 整形・ローカル保存 ---
   formatBtn.addEventListener("click", () => {
-    if (!uploadHtml.files.length)
-      return alert("整形したい HTML ファイルを選択してください");
+    if (!uploadHtml.files.length) return alert("整形したい HTML ファイルを選択してください");
     const reader = new FileReader();
     reader.onload = e => {
       let html = e.target.result;
-      const robotsMeta    = '<meta name="robots" content="noindex,nofollow">';
+      const robotsMeta   = '<meta name="robots" content="noindex,nofollow">';
       const norobotScript = '<script src="norobot.js"></scr' + 'ipt>';
       html = html.replace(/<\/head>/i, robotsMeta + "\n" + norobotScript + "\n</head>");
       formattedOutput.textContent = html;
@@ -119,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
   downloadBtn.addEventListener("click", () => {
     const out      = formattedOutput.textContent;
     const filename = filenameInput.value.trim() || "test.html";
-    const linkname = linknameInput.value.trim()  || filename;
+    const linkname = linknameInput.value.trim() || filename;
     if (!out) return alert("まずは「修正」ボタンで整形してください");
 
     const blob = new Blob([out], { type: "text/html" });
@@ -138,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- 5) 作成済み一覧 初期表示 ---
+  // --- 作成済み一覧の初期表示 ---
   if (listContainer) {
     const files = JSON.parse(localStorage.getItem("generatedFiles") || "[]");
     if (!files.length) {
@@ -155,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const li = document.createElement("li");
     li.className = "list-group-item";
     const a  = document.createElement("a");
-    a.href        = filename;
+    a.href       = filename;
     a.textContent = linkname || filename;
     a.target      = "_blank";
     li.appendChild(a);
