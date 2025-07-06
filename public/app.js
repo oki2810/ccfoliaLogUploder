@@ -25,11 +25,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- 1) OAuth開始 ---
   githubConnectBtn.addEventListener("click", () => {
-    window.location.href = "/auth/github";
+    // API ルートにリダイレクトして OAuth を開始
+    window.location.href = "/api/auth/github";
   });
 
   // 認証状態チェック
-  fetch("/api/auth/status", {
+  fetch("/api/auth-status", {
     credentials: "include",
     headers: { "X-CSRF-Token": getCsrfToken() }
   })
