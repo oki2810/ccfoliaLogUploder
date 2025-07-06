@@ -1,21 +1,29 @@
+// api/auth/github.js
 import crypto from "crypto";
-import { saveState } from "../state-store.js";
+import cookie from "cookie";
 
 export default function handler(req, res) {
-  const state = crypto.randomBytes(8).toString("hex");
-  // Save state server-side to verify after redirect
-  saveState(state);
+  // 16バイトのランダム state を生成
+  const state = crypto.randomBytes(16).toString("hex");
+
+  // クッキーに state を保存（本番HTTPS環境のみ secure）
   res.setHeader(
     "Set-Cookie",
-    `oauth_state=${state}; Path=/; HttpOnly; SameSite=Lax`
+    cookie.serialize("oauth_state", state, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+    })
   );
+
+  // GitHub OAuth 認可画面へリダイレクト
   const params = new URLSearchParams({
     client_id: process.env.GH_CLIENT_ID,
+    redirect_uri: process.env.AUTH_CALLBACK_URL || `${process.env.BASE_URL}/api/auth/github-callback`,
     scope: "repo",
     state,
   });
-  if (process.env.AUTH_CALLBACK_URL) {
-    params.set("redirect_uri", process.env.AUTH_CALLBACK_URL);
-  }
-  res.redirect(`https://github.com/login/oauth/authorize?${params}`);
+
+  res.redirect(`https://github.com/login/oauth/authorize?${params.toString()}`);
 }
