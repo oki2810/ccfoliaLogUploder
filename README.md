@@ -12,6 +12,7 @@ GH_CLIENT_ID=your_github_oauth_client_id
 GH_CLIENT_SECRET=your_github_oauth_client_secret
 SESSION_SECRET=any_random_string
 WEBHOOK_SECRET=your_webhook_secret
+
 AUTH_CALLBACK_URL=http://localhost:3000/api/auth/github-callback
 ```
 
