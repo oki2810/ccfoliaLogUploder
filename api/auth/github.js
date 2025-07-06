@@ -7,7 +7,10 @@ export default function handler(req, res) {
   const params = new URLSearchParams({
     client_id: process.env.GH_CLIENT_ID,
     scope: "repo",
-    state
+    state,
   });
+  if (process.env.AUTH_CALLBACK_URL) {
+    params.set("redirect_uri", process.env.AUTH_CALLBACK_URL);
+  }
   res.redirect(`https://github.com/login/oauth/authorize?${params}`);
 }
