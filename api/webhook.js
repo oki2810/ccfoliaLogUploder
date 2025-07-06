@@ -1,27 +1,23 @@
-import rawBody from 'raw-body';
-import { createHmac, timingSafeEqual } from 'crypto';
-import { Octokit } from '@octokit/rest';
+import crypto from "crypto";
+import { Octokit } from "@octokit/rest";
 
 export const config = { api: { bodyParser: false } };
 
 export default async function handler(req, res) {
-  const buf = await rawBody(req);
-  const sig = req.headers['x-hub-signature-256'] || '';
-
-  // 署名検証
-  const hmac = createHmac('sha256', process.env.WEBHOOK_SECRET);
-  hmac.update(buf);
-  const digest = 'sha256=' + hmac.digest('hex');
-  if (!timingSafeEqual(Buffer.from(sig), Buffer.from(digest))) {
-    return res.status(401).send('Invalid signature');
+  const sig = req.headers["x-hub-signature-256"] || "";
+  const hmac = crypto.createHmac("sha256", process.env.WEBHOOK_SECRET);
+  hmac.update(req.body);
+  const expected = `sha256=${hmac.digest("hex")}`;
+  if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) {
+    return res.status(401).end("Invalid signature");
   }
 
-  const event = req.headers['x-github-event'];
-  if (event === 'push') {
-    const payload = JSON.parse(buf.toString());
-    // TODO: push イベントの payload を解析し、logs/ 以下の HTML 追加を検知
-    // その後、Octokit で index.html を再生成してコミットする処理を呼び出す
+  const event = req.headers["x-github-event"];
+  if (event === "push") {
+    const payload = JSON.parse(req.body.toString());
+    // 必要なら logs/以下への追加を検出して index.html を再生成
+    // （upload.js と同様のロジックをここに入れられます）
   }
 
-  res.status(200).send('OK');
+  res.status(200).end("OK");
 }
