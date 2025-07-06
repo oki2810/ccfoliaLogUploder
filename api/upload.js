@@ -8,7 +8,8 @@ const upload = multer({ limits: { fileSize: 2 * 1024 * 1024 } });
 const schema = Joi.object({
   owner: Joi.string().required(),
   repo: Joi.string().required(),
-  path: Joi.string().pattern(/^logs\/.+\.html$/).required(),
+  // log/ 以下へのアップロードのみ許可
+  path: Joi.string().pattern(/^log\/.+\.html$/).required(),
   linkText: Joi.string().max(100).required()
 });
 
@@ -36,7 +37,7 @@ export default async function handler(req, res) {
   const cookies = Object.fromEntries(
     (req.headers.cookie || "").split("; ").map(c => c.split("="))
   );
-  const token = cookies.accessToken;
+  const token = cookies.access_token;
   if (!token) return res.status(401).json({ ok: false, error: "Unauthorized" });
 
   // マルチパート解析
@@ -58,22 +59,15 @@ export default async function handler(req, res) {
     content: fileB64
   });
 
-  // 2) index.html を取得（無ければテンプレート作成）
-  let sha = null;
-  let html;
-  try {
-    const idx = await octokit.repos.getContent({ owner, repo, path: "index.html" });
-    sha  = idx.data.sha;
-    html = Buffer.from(idx.data.content, "base64").toString("utf8");
-  } catch (err) {
-    if (err.status === 404) {
-      html = DEFAULT_INDEX;
-    } else {
-      throw err;
-    }
+  // 2) index.html を取得（空ならテンプレートで置き換え）
+  const idx = await octokit.repos.getContent({ owner, repo, path: "index.html" });
+  let sha  = idx.data.sha;
+  let html = Buffer.from(idx.data.content, "base64").toString("utf8");
+  if (!html.trim()) {
+    html = DEFAULT_INDEX;
   }
 
-  const newItem = `<li><a href="${path}">${linkText}</a></li>`;
+  const newItem = `<li class="list-group-item"><a href="${path}">${linkText}</a></li>`;
   if (html.match(/<ul[^>]+id="generatedList"/)) {
     html = html.replace(
       /(<ul[^>]+id="generatedList"[^>]*>)/,
@@ -82,7 +76,7 @@ export default async function handler(req, res) {
   } else {
     html = html.replace(
       /<\/body>/i,
-      `  <ul id="generatedList">\n    ${newItem}\n  </ul>\n</body>`
+      `  <ul id="generatedList" class="list-group">\n    ${newItem}\n  </ul>\n</body>`
     );
   }
 
