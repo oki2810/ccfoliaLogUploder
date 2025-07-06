@@ -1,19 +1,28 @@
-import axios from 'axios';
+import axios from "axios";
 
 export default async function handler(req, res) {
   const { code, state } = req.query;
-  // TODO: state の検証を実装
+  // Cookie から state を検証
+  const cookies = Object.fromEntries(
+    (req.headers.cookie || "").split("; ").map(c => c.split("="))
+  );
+  if (state !== cookies.oauth_state) {
+    return res.status(403).send("Invalid state");
+  }
+
   const tokenRes = await axios.post(
-    'https://github.com/login/oauth/access_token',
+    "https://github.com/login/oauth/access_token",
     {
       client_id: process.env.GH_CLIENT_ID,
       client_secret: process.env.GH_CLIENT_SECRET,
-      code,
+      code
     },
-    { headers: { Accept: 'application/json' } }
+    { headers: { Accept: "application/json" } }
   );
-  const accessToken = tokenRes.data.access_token;
-  // HTTP-only Cookie に保存
-  res.setHeader('Set-Cookie', `accessToken=${accessToken}; HttpOnly; Path=/; SameSite=Lax`);
-  res.redirect('/');
+  // Cookie にトークンを保存
+  res.setHeader(
+    "Set-Cookie",
+    `accessToken=${tokenRes.data.access_token}; Path=/; HttpOnly; SameSite=Lax`
+  );
+  res.redirect("/");
 }
