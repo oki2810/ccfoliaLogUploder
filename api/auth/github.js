@@ -3,32 +3,28 @@ import crypto from "crypto";
 import cookie from "cookie";
 
 export default function handler(req, res) {
-  // 16 バイト乱数を hex 文字列に変換
+  // 16バイトのランダム state
   const state = crypto.randomBytes(16).toString("hex");
 
-  // OAuth state をクッキーに保存（本番HTTPSのみ・クロスサイトでも送らせる）
+  // クロスサイトリダイレクトでも必ず送られるように SameSite=None, Secure を指定
   res.setHeader(
     "Set-Cookie",
     cookie.serialize("oauth_state", state, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: true,         // 本番 HTTPS 環境でのみ有効
+      sameSite: "none",     // OAuth のリダイレクトでも送信させる
       path: "/",
-      maxAge: 10 * 60, // 10 分で自動破棄
+      maxAge: 10 * 60,      // 10 分だけ有効
     })
   );
 
-  // GitHub 認可画面へリダイレクト
-  const redirectUri =
-    process.env.AUTH_CALLBACK_URL ||
-    `${process.env.BASE_URL}/api/auth/github-callback`;
-
+  const redirectUri = process.env.AUTH_CALLBACK_URL;
   const params = new URLSearchParams({
-    client_id: process.env.GH_CLIENT_ID,
+    client_id:    process.env.GH_CLIENT_ID,
     redirect_uri: redirectUri,
-    scope: "repo",
+    scope:        "repo",
     state,
   });
 
-  res.redirect(`https://github.com/login/oauth/authorize?${params}`);
+  return res.redirect(`https://github.com/login/oauth/authorize?${params}`);
 }
