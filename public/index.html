@@ -25,60 +25,16 @@
         GitHub リポジトリにコミット／ローカル保存できるツールです。
       </p>
 
-      <!-- ① GitHub連携セクション -->
-      <div class="card mb-4">
-        <div class="card-header">① GitHub 連携</div>
-        <div class="card-body">
-          <div id="authSection">
-            <button id="githubConnectBtn" class="btn btn-dark">
-              GitHub と連携
-            </button>
-          </div>
-          <div id="repoSettings" style="display: none;">
-            <div class="row mb-3">
-              <div class="col">
-                <input
-                  type="text"
-                  id="ownerInput"
-                  class="form-control"
-                  placeholder="リポジトリ所有者 (ユーザー名/Org)"
-                />
-              </div>
-              <div class="col">
-                <input
-                  type="text"
-                  id="repoInput"
-                  class="form-control"
-                  placeholder="リポジトリ名"
-                />
-              </div>
-            </div>
-            <div class="mb-3">
-              <label for="pathInput" class="form-label">コミット先パス</label>
-              <input
-                type="text"
-                id="pathInput"
-                class="form-control"
-                value="logs/test.html"
-              />
-            </div>
-            <div class="mb-3">
-              <button id="githubUploadBtn" class="btn btn-primary">
-                GitHub にコミット
-              </button>
-              <button
-                id="viewProjectBtn"
-                class="btn btn-secondary ms-2"
-                style="display: none;"
-              >
-                プロジェクト公開ページを開く
-              </button>
-            </div>
-            <div id="githubStatus" class="mt-2"></div>
-          </div>
-        </div>
-      </div>
-
+<div id="authSection">
+  <!-- ボタンではなくアンカーにする -->
+  <a
+    id="githubConnectBtn"
+    class="btn btn-dark"
+    href="/api/auth/github"
+  >
+    GitHub と連携
+  </a>
+</div>
       <!-- ② HTML整形・ローカル保存セクション -->
       <div class="card mb-4">
         <div class="card-header">② HTML 整形・ローカル保存</div>
