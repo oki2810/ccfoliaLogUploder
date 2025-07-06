@@ -15,7 +15,7 @@ export default async function handler(req, res) {
   const event = req.headers["x-github-event"];
   if (event === "push") {
     const payload = JSON.parse(req.body.toString());
-    // 必要なら logs/以下への追加を検出して index.html を再生成
+    // 必要なら log/ 以下への追加を検出して index.html を再生成
     // （upload.js と同様のロジックをここに入れられます）
   }
 
