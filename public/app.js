@@ -13,17 +13,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginInfo        = document.getElementById("loginInfo");
   const ownerInput       = document.getElementById("ownerInput");
   const repoInput        = document.getElementById("repoInput");
+  const pathInput        = document.getElementById("pathInput");
   const viewProjectBtn   = document.getElementById("viewProjectBtn");
   const githubUploadBtn  = document.getElementById("githubUploadBtn");
   const githubStatus     = document.getElementById("githubStatus");
 
   const uploadHtml       = document.getElementById("uploadHtml");
   const formatBtn        = document.getElementById("formatBtn");
-  const downloadBtn      = document.getElementById("downloadBtn");
-  const filenameInput    = document.getElementById("filenameInput");
   const linknameInput    = document.getElementById("linknameInput");
   const formattedOutput  = document.getElementById("formattedOutput");
-  const listContainer    = document.getElementById("generatedList");
+
+  // リンク名入力に合わせてコミットパスを更新
+  const syncPath = () => {
+    const name = linknameInput.value.trim() || "test";
+    pathInput.value = `log/${name}.html`;
+  };
+  linknameInput.addEventListener("input", syncPath);
+  syncPath();
 
   // --- GitHub OAuth 開始 ---
   githubConnectBtn.addEventListener("click", () => {
@@ -75,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const out   = formattedOutput.textContent;
     const owner = ownerInput.value.trim();
     const repo  = repoInput.value.trim();
-    const path  = document.getElementById("pathInput").value.trim();
+    const path  = pathInput.value.trim();
     const linkText = linknameInput.value.trim();
 
     if (!out) return alert("まずは「修正」ボタンで整形してください");
@@ -108,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- HTML 整形・ローカル保存 ---
+  // --- HTML 整形 ---
   formatBtn.addEventListener("click", () => {
     if (!uploadHtml.files.length) return alert("整形したい HTML ファイルを選択してください");
     const reader = new FileReader();
@@ -122,49 +128,5 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsText(uploadHtml.files[0]);
   });
 
-  downloadBtn.addEventListener("click", () => {
-    const out      = formattedOutput.textContent;
-    const filename = filenameInput.value.trim() || "test.html";
-    const linkname = linknameInput.value.trim() || filename;
-    if (!out) return alert("まずは「修正」ボタンで整形してください");
 
-    const blob = new Blob([out], { type: "text/html" });
-    const a    = document.createElement("a");
-    a.href     = URL.createObjectURL(blob);
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(a.href);
-
-    const files = JSON.parse(localStorage.getItem("generatedFiles") || "[]");
-    const entry = { filename, linkname };
-    if (!files.some(f => f.filename === filename)) {
-      files.push(entry);
-      localStorage.setItem("generatedFiles", JSON.stringify(files));
-      appendToGeneratedList(entry);
-    }
-  });
-
-  // --- 作成済み一覧の初期表示 ---
-  if (listContainer) {
-    const files = JSON.parse(localStorage.getItem("generatedFiles") || "[]");
-    if (!files.length) {
-      const li = document.createElement("li");
-      li.className = "list-group-item";
-      li.textContent = "まだファイルが生成されていません。";
-      listContainer.appendChild(li);
-    } else {
-      files.forEach(appendToGeneratedList);
-    }
-  }
-
-  function appendToGeneratedList({ filename, linkname }) {
-    const li = document.createElement("li");
-    li.className = "list-group-item";
-    const a  = document.createElement("a");
-    a.href       = filename;
-    a.textContent = linkname || filename;
-    a.target      = "_blank";
-    li.appendChild(a);
-    listContainer.appendChild(li);
-  }
 });
