@@ -42,7 +42,7 @@
                   type="text"
                   id="ownerInput"
                   class="form-control"
-                  placeholder="リポジトリ所有者 (ユーザー名/Org)"
+                  placeholder="リポジトリ所有者 (ユーザー名)"
                 />
               </div>
               <div class="col">
@@ -89,7 +89,7 @@
               type="text"
               id="filenameInput"
               class="form-control"
-              placeholder="例: my-log.html"
+              placeholder="例: サンプルシナリオ"
             />
           </div>
           <div class="mb-3">
@@ -98,7 +98,7 @@
               type="text"
               id="linknameInput"
               class="form-control"
-              placeholder="例: my-log.html"
+              placeholder="例: sample_scenario"
             />
           </div>
           <button id="formatBtn" class="btn btn-secondary me-2">修正</button>
@@ -120,15 +120,6 @@
           <div id="githubStatus" class="mt-2"></div>
         </div>
       </div>
-
-      <!-- ③ 作成済みログ一覧 -->
-      <div class="card">
-        <div class="card-header">③ 作成済みログ一覧</div>
-        <div class="card-body">
-          <ul id="generatedList" class="list-group"></ul>
-        </div>
-      </div>
-    </div>
 
     <!-- アプリケーション JS -->
     <script src="app.js"></script>
