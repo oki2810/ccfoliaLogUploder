@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "builds": [
+    // api フォルダはサーバーレス関数
+    { "src": "api/**/*.js", "use": "@vercel/node" },
+    // public フォルダは静的ファイル
+    { "src": "public/**/*",   "use": "@vercel/static" }
+  ],
+  "routes": [
+    // /api/* はそのまま api/*.js にルーティング
+    { "src": "/api/(.*)", "dest": "api/$1.js" },
+    // それ以外は public 以下のファイルを返す
+    { "src": "/(.*)",     "dest": "public/$1" }
+  ]
+}
