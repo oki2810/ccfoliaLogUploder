@@ -27,7 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // リンク名入力に合わせてコミットパスを更新
   const syncPath = () => {
     // 半角英数字以外は除去
-    linknameInput.value = linknameInput.value.replace(/[^0-9A-Za-z]/g, "");
     const name = linknameInput.value.trim() || "test";
     pathInput.value = `log/${name}.html`;
   };
