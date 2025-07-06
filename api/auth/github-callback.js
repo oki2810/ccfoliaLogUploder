@@ -1,5 +1,6 @@
 import axios from "axios";
 import cookie from "cookie";
+import { verifyState } from "../state-store.js";
 
 export default async function handler(req, res) {
   try {
@@ -11,7 +12,7 @@ export default async function handler(req, res) {
     // ← ここが旧来の split/map/Object.fromEntries ではなく…
     const cookies = cookie.parse(req.headers.cookie || "");
 
-    if (state !== cookies.oauth_state) {
+    if (state !== cookies.oauth_state || !verifyState(state)) {
       return res.status(403).send("Invalid state");
     }
 
