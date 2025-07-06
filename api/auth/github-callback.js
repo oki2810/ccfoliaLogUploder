@@ -3,8 +3,21 @@ import cookie from "cookie";
 
 export default async function handler(req, res) {
   const { code, state } = req.query;
+
+  // ← ここでログをドバっと出す
+  console.log("=== DEBUG STATE CHECK ===");
+  console.log("  query.state:", state);
+  console.log("  raw Cookie header:", req.headers.cookie);
+  const cookies = cookie.parse(req.headers.cookie || "");
+  console.log("  parsed cookies:", cookies);
+  console.log("=========================");
+
+  // 以下は元のバリデーション
   if (!code || !state) {
     return res.status(400).send("Missing code or state");
+  }
+  if (state !== cookies.oauth_state) {
+    return res.status(403).send("Invalid state");
   }
 
   // ブラウザが送ってきた oauth_state クッキーを読む
