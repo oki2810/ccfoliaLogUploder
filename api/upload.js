@@ -59,13 +59,27 @@ export default async function handler(req, res) {
     content: fileB64
   });
 
-  // 2) index.html を取得（空ならテンプレートで置き換え）
+// 2) index.html を取得（無ければテンプレート作成、空ならテンプレート置換）
+let sha = null;
+let html;
+
+try {
   const idx = await octokit.repos.getContent({ owner, repo, path: "index.html" });
-  let sha  = idx.data.sha;
-  let html = Buffer.from(idx.data.content, "base64").toString("utf8");
+  sha  = idx.data.sha;
+  html = Buffer.from(idx.data.content, "base64").toString("utf8");
+
+  // ファイルはあるけど空っぽ（スペースだけ）だったらテンプレートに切り替え
   if (!html.trim()) {
     html = DEFAULT_INDEX;
   }
+} catch (err) {
+  if (err.status === 404) {
+    // ファイル自体がないときはテンプレートをまるっと流用
+    html = DEFAULT_INDEX;
+  } else {
+    throw err;
+  }
+}
 
   const newItem = `<li class="list-group-item"><a href="${path}">${linkText}</a></li>`;
   if (html.match(/<ul[^>]+id="generatedList"/)) {
