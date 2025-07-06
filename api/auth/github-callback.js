@@ -30,6 +30,7 @@ export default async function handler(req, res) {
       cookie.serialize("accessToken", tokenRes.data.access_token, {
         httpOnly: true,
         sameSite: "lax",
+        secure: true,
         path: "/",
       })
     );
