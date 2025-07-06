@@ -49,23 +49,20 @@ export default async function handler(req, res) {
   const { owner, repo, path, linkText } = await schema.validateAsync(req.body);
   const octokit = new Octokit({ auth: token });
 
-  // 1) 新規ログを追加
+  // 1) 新規ログデータ
   const fileB64 = req.file.buffer.toString("base64");
-  await octokit.repos.createOrUpdateFileContents({
+  const { data: logBlob } = await octokit.git.createBlob({
     owner,
     repo,
-    path,
-    message: `Add ${path}`,
-    content: fileB64
+    content: fileB64,
+    encoding: "base64",
   });
 
 // 2) index.html を取得（無ければテンプレート作成、空ならテンプレート置換）
-let sha = null;
 let html;
 
 try {
   const idx = await octokit.repos.getContent({ owner, repo, path: "index.html" });
-  sha  = idx.data.sha;
   html = Buffer.from(idx.data.content, "base64").toString("utf8");
 
   // ファイルはあるけど空っぽ（スペースだけ）だったらテンプレートに切り替え
@@ -94,35 +91,88 @@ try {
     );
   }
 
-  // 3) index.html コミット
-  await octokit.repos.createOrUpdateFileContents({
+  // 3) index.html ブロブ作成
+  const { data: indexBlob } = await octokit.git.createBlob({
     owner,
     repo,
-    path: "index.html",
-    message: sha ? `Update index.html` : `Add index.html`,
     content: Buffer.from(html, "utf8").toString("base64"),
-    ...(sha ? { sha } : {})
+    encoding: "base64",
   });
 
-  // norobot.js が無ければ追加
+  // norobot.js が無ければブロブ作成
   let needNorobot = false;
+  let norobotBlob = null;
   try {
     await octokit.repos.getContent({ owner, repo, path: "norobot.js" });
   } catch (err) {
-    if (err.status === 404) needNorobot = true; else throw err;
+    if (err.status === 404) {
+      needNorobot = true;
+      const scriptPath = nodePath.join(process.cwd(), "public", "norobot.js");
+      const scriptB64 = fs.readFileSync(scriptPath).toString("base64");
+      const { data } = await octokit.git.createBlob({
+        owner,
+        repo,
+        content: scriptB64,
+        encoding: "base64",
+      });
+      norobotBlob = data;
+    } else {
+      throw err;
+    }
   }
 
-  if (needNorobot) {
-    const scriptPath = nodePath.join(process.cwd(), "public", "norobot.js");
-    const scriptB64 = fs.readFileSync(scriptPath).toString("base64");
-    await octokit.repos.createOrUpdateFileContents({
-      owner,
-      repo,
+  // 4) 単一コミットとしてアップロード
+  const { data: repoInfo } = await octokit.repos.get({ owner, repo });
+  const branch = repoInfo.default_branch;
+  const { data: refData } = await octokit.git.getRef({
+    owner,
+    repo,
+    ref: `heads/${branch}`,
+  });
+  const baseCommitSha = refData.object.sha;
+  const { data: baseCommit } = await octokit.git.getCommit({
+    owner,
+    repo,
+    commit_sha: baseCommitSha,
+  });
+
+  const treeItems = [
+    { path, mode: "100644", type: "blob", sha: logBlob.sha },
+    { path: "index.html", mode: "100644", type: "blob", sha: indexBlob.sha },
+  ];
+  if (needNorobot && norobotBlob) {
+    treeItems.push({
       path: "norobot.js",
-      message: "Add norobot.js",
-      content: scriptB64
+      mode: "100644",
+      type: "blob",
+      sha: norobotBlob.sha,
     });
   }
+
+  const { data: newTree } = await octokit.git.createTree({
+    owner,
+    repo,
+    base_tree: baseCommit.tree.sha,
+    tree: treeItems,
+  });
+
+  let commitMessage = `Add ${path}`;
+  if (needNorobot) commitMessage += ", add norobot.js";
+  commitMessage += " and update index.html";
+  const { data: newCommit } = await octokit.git.createCommit({
+    owner,
+    repo,
+    message: commitMessage,
+    tree: newTree.sha,
+    parents: [baseCommitSha],
+  });
+
+  await octokit.git.updateRef({
+    owner,
+    repo,
+    ref: `heads/${branch}`,
+    sha: newCommit.sha,
+  });
 
   res.json({ ok: true });
 }
