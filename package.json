@@ -1,0 +1,11 @@
+{
+  "name": "ccfolia-log-uploader",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo 'no build step'" 
+  },
+  "dependencies": {
+    "axios": "^1.4.0"
+  }
+}
