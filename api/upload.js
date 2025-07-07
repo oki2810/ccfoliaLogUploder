@@ -79,7 +79,7 @@ try {
   }
 }
 
-  const newItem = `<li class="list-group-item"><a href="${path}">${linkText}</a><span class="ms-2 text-muted">${scenarioName}</span></li>`;
+  const newItem = `<li class="list-group-item"><span class="text-muted">${scenarioName}</span><a href="${path}" class="ms-2">${linkText}</a></li>`;
   if (html.match(/<ul[^>]+id="generatedList"/)) {
     html = html.replace(
       /(<ul[^>]+id="generatedList"[^>]*>)/,
