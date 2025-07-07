@@ -47,19 +47,43 @@ export default async function handler(req, res) {
 <body><h1>It works!</h1></body>
 </html>`;
     const WORKFLOW_YAML = `name: Deploy to GitHub Pages
+
 on:
   push:
     branches:
       - main
   workflow_dispatch:
+
 jobs:
-  …`;
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build --if-present
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: \${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+`;
     const PACKAGE_JSON = JSON.stringify({
       name: "coc-github-io",
       version: "1.0.0",
       private: true,
       description: "GitHub Pages site for coc.github.io",
-      scripts: { build: "echo \\"No build step\\"" },
+      scripts: { build: "echo \"No build step\"" },
       dependencies: {},
     }, null, 2);
 
