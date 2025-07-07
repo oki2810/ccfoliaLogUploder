@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const authSection      = document.getElementById("authSection");
   const repoSettings     = document.getElementById("repoSettings");
   const loginInfo        = document.getElementById("loginInfo");
-  const ownerInput       = document.getElementById("ownerInput");
+  let ownerName          = "";
   const repoInput        = document.getElementById("repoInput");
   const pathInput        = document.getElementById("pathInput");
   const viewProjectBtn   = document.getElementById("viewProjectBtn");
@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const uploadHtml       = document.getElementById("uploadHtml");
   const formatBtn        = document.getElementById("formatBtn");
+  const filenameInput    = document.getElementById("filenameInput");
   const linknameInput    = document.getElementById("linknameInput");
   const formattedOutput  = document.getElementById("formattedOutput");
 
@@ -68,6 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
             : "GitHub連携中";
           loginInfo.style.display = "block";
         }
+        ownerName = data.username || "";
         githubDisconnectBtn.style.display = "inline-block";
         updateViewBtn();
       } else {
@@ -75,44 +77,44 @@ document.addEventListener("DOMContentLoaded", () => {
         repoSettings.style.display = "none";
         if (loginInfo) loginInfo.style.display = "none";
         githubDisconnectBtn.style.display = "none";
+        ownerName = "";
       }
     })
     .catch(err => console.error("Auth status error:", err));
 
   // プロジェクト公開ページリンク更新
   function updateViewBtn() {
-    const owner = ownerInput.value.trim();
-    const repo  = repoInput.value.trim();
-    if (owner && repo) {
-      const url = `https://${owner}.github.io/${repo}/`;
+    const repo = repoInput.value.trim();
+    if (ownerName && repo) {
+      const url = `https://${ownerName}.github.io/${repo}/`;
       viewProjectBtn.onclick = () => window.open(url, "_blank");
       viewProjectBtn.style.display = "inline-block";
     } else {
       viewProjectBtn.style.display = "none";
     }
   }
-  ownerInput.addEventListener("input", updateViewBtn);
   repoInput.addEventListener("input", updateViewBtn);
 
   // --- GitHub へのコミット ---
   githubUploadBtn.addEventListener("click", async () => {
     const out   = formattedOutput.textContent;
-    const owner = ownerInput.value.trim();
     const repo  = repoInput.value.trim();
     const path  = pathInput.value.trim();
     const linkText = linknameInput.value.trim();
+    const scenarioName = filenameInput.value.trim();
 
     if (!out) return alert("まずは「修正」ボタンで整形してください");
-    if (!owner || !repo || !path) return alert("リポジトリ情報をすべて入力してください");
+    if (!ownerName || !repo || !path) return alert("リポジトリ情報をすべて入力してください");
 
     githubStatus.textContent = "送信中…";
     try {
       const formData = new FormData();
       formData.append("htmlFile", new Blob([out], { type: "text/html" }), path.split("/").pop());
-      formData.append("owner", owner);
+      formData.append("owner", ownerName);
       formData.append("repo", repo);
       formData.append("path", path);
       formData.append("linkText", linkText);
+      formData.append("scenarioName", scenarioName);
 
       const res = await fetch("/api/upload", {
         method: "POST",

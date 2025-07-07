@@ -10,7 +10,8 @@ const schema = Joi.object({
   repo: Joi.string().required(),
   // log/ 以下へのアップロードのみ許可
   path: Joi.string().pattern(/^log\/.+\.html$/).required(),
-  linkText: Joi.string().max(100).required()
+  linkText: Joi.string().max(100).required(),
+  scenarioName: Joi.string().max(100).required()
 });
 
 const DEFAULT_INDEX = `<!DOCTYPE html>
@@ -46,7 +47,7 @@ export default async function handler(req, res) {
   });
   if (!req.file) return res.status(400).json({ ok: false, error: "No file" });
 
-  const { owner, repo, path, linkText } = await schema.validateAsync(req.body);
+  const { owner, repo, path, linkText, scenarioName } = await schema.validateAsync(req.body);
   const octokit = new Octokit({ auth: token });
 
   // 1) 新規ログデータ
@@ -78,7 +79,7 @@ try {
   }
 }
 
-  const newItem = `<li class="list-group-item"><a href="${path}">${linkText}</a></li>`;
+  const newItem = `<li class="list-group-item"><a href="${path}">${scenarioName}</a></li>`;
   if (html.match(/<ul[^>]+id="generatedList"/)) {
     html = html.replace(
       /(<ul[^>]+id="generatedList"[^>]*>)/,
