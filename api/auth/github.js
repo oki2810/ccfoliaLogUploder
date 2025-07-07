@@ -15,7 +15,9 @@ export default function handler(req, res) {
     })
   );
 
-  const redirectUri = `${req.headers["x-forwarded-proto"]}://${req.headers.host}/api/auth/github-callback`;
+  const redirectUri =
+    process.env.AUTH_CALLBACK_URL ||
+    `${req.headers["x-forwarded-proto"]}://${req.headers.host}/api/auth/github-callback`;
   const params = new URLSearchParams({
     client_id:    process.env.GH_CLIENT_ID,
     redirect_uri: redirectUri,
