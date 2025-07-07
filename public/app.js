@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       const result = await res.json();
       if (result.ok) {
-        githubStatus.innerHTML = '<div class="alert alert-success">GitHub へのコミットに成功しました！</div>';
+        githubStatus.innerHTML = '<div class="alert alert-success">GitHub へのコミットに成功しました！<br>反映まで5分ほどお待ち下さい！</div>';
       } else {
         githubStatus.innerHTML = `<div class="alert alert-danger">エラー: ${result.error}</div>`;
       }
