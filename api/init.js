@@ -1,19 +1,23 @@
 import { Octokit } from "@octokit/rest";
 
 export default async function handler(req, res) {
-  if (req.method !== "POST")
+  if (req.method !== "POST") {
     return res.status(405).json({ ok: false, error: "Method Not Allowed" });
+  }
 
   // 認証トークン取得
   const cookies = Object.fromEntries(
     (req.headers.cookie || "").split("; ").map(c => c.split("="))
   );
   const token = cookies.access_token;
-  if (!token) return res.status(401).json({ ok: false, error: "Unauthorized" });
+  if (!token) {
+    return res.status(401).json({ ok: false, error: "Unauthorized" });
+  }
 
   const { owner, repo } = req.body || {};
-  if (!owner || !repo)
+  if (!owner || !repo) {
     return res.status(400).json({ ok: false, error: "Missing owner or repo" });
+  }
 
   const octokit = new Octokit({ auth: token });
 
@@ -21,10 +25,13 @@ export default async function handler(req, res) {
     // リポジトリ情報取得
     const { data: repoInfo } = await octokit.repos.get({ owner, repo });
     const branch = repoInfo.default_branch;
+    console.log("init:", { owner, repo, branch });
+
+    // 参照情報取得（修正箇所）
     const { data: refData } = await octokit.git.getRef({
       owner,
       repo,
-      ref: `refs/heads/${branch}`,
+      ref: `heads/${branch}`,
     });
     const baseCommitSha = refData.object.sha;
     const { data: baseCommit } = await octokit.git.getCommit({
@@ -35,24 +42,24 @@ export default async function handler(req, res) {
 
     // ファイル定義
     const INIT_INDEX = `<!DOCTYPE html>
-    <html lang="ja">
-    <head><meta charset="utf-8"><title>GitHub Pages</title></head>
-    <body><h1>It works!</h1></body>
-    </html>`;
+<html lang="ja">
+<head><meta charset="utf-8"><title>GitHub Pages</title></head>
+<body><h1>It works!</h1></body>
+</html>`;
     const WORKFLOW_YAML = `name: Deploy to GitHub Pages
-    on:
-      push:
-        branches:
-          - main
-      workflow_dispatch:
-    jobs:
-      …`;
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+jobs:
+  …`;
     const PACKAGE_JSON = JSON.stringify({
       name: "coc-github-io",
       version: "1.0.0",
       private: true,
       description: "GitHub Pages site for coc.github.io",
-      scripts: { build: "echo \"No build step\"" },
+      scripts: { build: "echo \\"No build step\\"" },
       dependencies: {},
     }, null, 2);
 
@@ -89,13 +96,15 @@ export default async function handler(req, res) {
     await octokit.git.updateRef({
       owner,
       repo,
-      ref: `refs/heads/${branch}`,
+      ref: `heads/${branch}`,   // ← こちらも修正
       sha: newCommit.sha,
     });
 
     return res.json({ ok: true });
   } catch (err) {
-    console.error("init error:", err);
-    return res.status(500).json({ ok: false, error: "Internal Server Error" });
+    console.error("❌ init error:", err);
+    return res
+      .status(err.status || 500)
+      .json({ ok: false, error: err.message });
   }
 }
