@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const githubUploadBtn  = document.getElementById("githubUploadBtn");
   const githubStatus     = document.getElementById("githubStatus");
   const githubDisconnectBtn = document.getElementById("githubDisconnectBtn");
-  const initRepoBtn      = document.getElementById("initRepoBtn");
 
   const uploadHtml       = document.getElementById("uploadHtml");
   const formatBtn        = document.getElementById("formatBtn");
@@ -94,35 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   ownerInput.addEventListener("input", updateViewBtn);
   repoInput.addEventListener("input", updateViewBtn);
-
-  // --- 初期設定: GitHub Pages 用ファイル作成 ---
-  initRepoBtn.addEventListener("click", async () => {
-    const owner = ownerInput.value.trim();
-    const repo  = repoInput.value.trim();
-    if (!owner || !repo) return alert("リポジトリ情報を入力してください");
-
-    githubStatus.textContent = "初期設定中…";
-    try {
-      const res = await fetch("/api/init", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": getCsrfToken()
-        },
-        body: JSON.stringify({ owner, repo })
-      });
-      const result = await res.json();
-      if (result.ok) {
-        githubStatus.innerHTML = '<div class="alert alert-success">初期設定が完了しました</div>';
-      } else {
-        githubStatus.innerHTML = `<div class="alert alert-danger">エラー: ${result.error}</div>`;
-      }
-    } catch (err) {
-      console.error(err);
-      githubStatus.innerHTML = '<div class="alert alert-danger">通信エラーが発生しました</div>';
-    }
-  });
 
   // --- GitHub へのコミット ---
   githubUploadBtn.addEventListener("click", async () => {
