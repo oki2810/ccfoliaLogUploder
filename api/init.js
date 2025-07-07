@@ -19,8 +19,7 @@ export default async function handler(req, res) {
   const octokit = new Octokit({ auth: token });
 
   try {
-
-  const INIT_INDEX = `<!DOCTYPE html>
+    const INIT_INDEX = `<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="utf-8">
@@ -31,7 +30,7 @@ export default async function handler(req, res) {
 </body>
 </html>`;
 
-  const WORKFLOW_YAML = `name: Deploy to GitHub Pages
+    const WORKFLOW_YAML = `name: Deploy to GitHub Pages
 on:
   push:
     branches:
@@ -58,66 +57,67 @@ jobs:
           publish_dir: ./public
 `;
 
-  const PACKAGE_JSON = JSON.stringify(
-    {
-      name: "coc-github-io",
-      version: "1.0.0",
-      private: true,
-      description: "GitHub Pages site for coc.github.io",
-      scripts: {
-        build: "echo \"No build step\""
+    const PACKAGE_JSON = JSON.stringify(
+      {
+        name: "coc-github-io",
+        version: "1.0.0",
+        private: true,
+        description: "GitHub Pages site for coc.github.io",
+        scripts: {
+          build: "echo \"No build step\""
+        },
+        dependencies: {}
       },
-      dependencies: {}
-    },
-    null,
-    2
-  );
+      null,
+      2
+    );
 
-  const { data: repoInfo } = await octokit.repos.get({ owner, repo });
-  const branch = repoInfo.default_branch;
-  const { data: refData } = await octokit.git.getRef({
-    owner,
-    repo,
-    ref: `heads/${branch}`,
-  });
-  const baseCommitSha = refData.object.sha;
-  const { data: baseCommit } = await octokit.git.getCommit({
-    owner,
-    repo,
-    commit_sha: baseCommitSha,
-  });
-
-  const files = [
-    { path: "index.html", content: INIT_INDEX },
-    { path: ".github/workflows/pages.yml", content: WORKFLOW_YAML },
-    { path: "package.json", content: PACKAGE_JSON },
-  ];
-
-  const treeItems = [];
-  for (const file of files) {
-    const { data: blob } = await octokit.git.createBlob({
+    // 以降はそのまま
+    const { data: repoInfo } = await octokit.repos.get({ owner, repo });
+    const branch = repoInfo.default_branch;
+    const { data: refData } = await octokit.git.getRef({
       owner,
       repo,
-      content: Buffer.from(file.content, "utf8").toString("base64"),
-      encoding: "base64",
+      ref: `heads/${branch}`,
     });
-    treeItems.push({ path: file.path, mode: "100644", type: "blob", sha: blob.sha });
-  }
+    const baseCommitSha = refData.object.sha;
+    const { data: baseCommit } = await octokit.git.getCommit({
+      owner,
+      repo,
+      commit_sha: baseCommitSha,
+    });
 
-  const { data: newTree } = await octokit.git.createTree({
-    owner,
-    repo,
-    base_tree: baseCommit.tree.sha,
-    tree: treeItems,
-  });
+    const files = [
+      { path: "index.html", content: INIT_INDEX },
+      { path: ".github/workflows/pages.yml", content: WORKFLOW_YAML },
+      { path: "package.json", content: PACKAGE_JSON },
+    ];
 
-  const { data: newCommit } = await octokit.git.createCommit({
-    owner,
-    repo,
-    message: "Initial setup for GitHub Pages",
-    tree: newTree.sha,
-    parents: [baseCommitSha],
-  });
+    const treeItems = [];
+    for (const file of files) {
+      const { data: blob } = await octokit.git.createBlob({
+        owner,
+        repo,
+        content: Buffer.from(file.content, "utf8").toString("base64"),
+        encoding: "base64",
+      });
+      treeItems.push({ path: file.path, mode: "100644", type: "blob", sha: blob.sha });
+    }
+
+    const { data: newTree } = await octokit.git.createTree({
+      owner,
+      repo,
+      base_tree: baseCommit.tree.sha,
+      tree: treeItems,
+    });
+
+    const { data: newCommit } = await octokit.git.createCommit({
+      owner,
+      repo,
+      message: "Initial setup for GitHub Pages",
+      tree: newTree.sha,
+      parents: [baseCommitSha],
+    });
 
     await octokit.git.updateRef({
       owner,
