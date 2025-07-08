@@ -46,8 +46,9 @@ export default async function handler(req, res) {
         commit_sha: baseCommitSha,
       });
       baseTreeSha = baseCommit.tree.sha;
-    } catch (err) {
-      if (err.status === 404 || err.status === 422) {
+      } catch (err) {
+        // GitHub returns 409 when the repository has no commits yet
+        if (err.status === 404 || err.status === 422 || err.status === 409) {
         const { data: readmeBlob } = await octokit.git.createBlob({
           owner,
           repo,
