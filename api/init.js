@@ -39,7 +39,7 @@ export default async function handler(req, res) {
       });
       baseTreeSha = baseCommit.tree.sha;
     } catch (err) {
-      if (err.status === 404) {
+      if (err.status === 404 || err.status === 422) {
         // create initial README commit when repository is empty
         const { data: readmeBlob } = await octokit.git.createBlob({
           owner,
