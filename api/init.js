@@ -5,7 +5,6 @@ export default async function handler(req, res) {
     return res.status(405).json({ ok: false, error: "Method Not Allowed" });
   }
 
-  // 認証トークン取得
   const cookies = Object.fromEntries(
     (req.headers.cookie || "").split("; ").map(c => c.split("="))
   );
@@ -22,25 +21,68 @@ export default async function handler(req, res) {
   const octokit = new Octokit({ auth: token });
 
   try {
-    // リポジトリ情報取得
-    const { data: repoInfo } = await octokit.repos.get({ owner, repo });
-    const branch = repoInfo.default_branch;
-    console.log("init:", { owner, repo, branch });
+    // base commit info (handle empty repos)
+    const branch = "main";
+    let baseCommitSha = null;
+    let baseTreeSha = null;
+    try {
+      const { data: refData } = await octokit.git.getRef({
+        owner,
+        repo,
+        ref: `heads/${branch}`,
+      });
+      baseCommitSha = refData.object.sha;
+      const { data: baseCommit } = await octokit.git.getCommit({
+        owner,
+        repo,
+        commit_sha: baseCommitSha,
+      });
+      baseTreeSha = baseCommit.tree.sha;
+    } catch (err) {
+      if (err.status === 404) {
+        // create initial README commit when repository is empty
+        const { data: readmeBlob } = await octokit.git.createBlob({
+          owner,
+          repo,
+          content: "# \u521d\u671f\u5316",
+          encoding: "utf-8",
+        });
 
-    // 参照情報取得（修正箇所）
-    const { data: refData } = await octokit.git.getRef({
-      owner,
-      repo,
-      ref: `heads/${branch}`,
-    });
-    const baseCommitSha = refData.object.sha;
-    const { data: baseCommit } = await octokit.git.getCommit({
-      owner,
-      repo,
-      commit_sha: baseCommitSha,
-    });
+        const { data: tree } = await octokit.git.createTree({
+          owner,
+          repo,
+          tree: [
+            {
+              path: "README.md",
+              mode: "100644",
+              type: "blob",
+              sha: readmeBlob.sha,
+            },
+          ],
+        });
 
-    // ファイル定義
+        const { data: commit } = await octokit.git.createCommit({
+          owner,
+          repo,
+          message: "\u521d\u56de\u30b3\u30df\u30c3\u30c8: README\u8ffd\u52a0",
+          tree: tree.sha,
+          parents: [],
+        });
+
+        await octokit.git.createRef({
+          owner,
+          repo,
+          ref: `refs/heads/${branch}`,
+          sha: commit.sha,
+        });
+
+        baseCommitSha = commit.sha;
+        baseTreeSha = tree.sha;
+      } else {
+        throw err;
+      }
+    }
+
     const INIT_INDEX = `<!DOCTYPE html>
 <html lang="ja">
 <head><meta charset="utf-8"><title>GitHub Pages</title></head>
@@ -79,21 +121,22 @@ jobs:
           publish_dir: ./public
 `;
     const PACKAGE_JSON = JSON.stringify({
-      name: "coc-github-io",
+      name: repo,
       version: "1.0.0",
       private: true,
-      description: "GitHub Pages site for coc.github.io",
+      description: "GitHub Pages site for " + repo,
       scripts: { build: "echo \"No build step\"" },
       dependencies: {},
     }, null, 2);
+    const README_MD = `# ${repo}\n\nCreated by CCU for GitHub Pages.`;
 
     const files = [
       { path: "index.html", content: INIT_INDEX },
       { path: ".github/workflows/pages.yml", content: WORKFLOW_YAML },
       { path: "package.json", content: PACKAGE_JSON },
+      { path: "README.md", content: README_MD },
     ];
 
-    // ブロブ→ツリー→コミット→参照更新
     const treeItems = [];
     for (const file of files) {
       const { data: blob } = await octokit.git.createBlob({
@@ -104,31 +147,41 @@ jobs:
       });
       treeItems.push({ path: file.path, mode: "100644", type: "blob", sha: blob.sha });
     }
+
     const { data: newTree } = await octokit.git.createTree({
       owner,
       repo,
-      base_tree: baseCommit.tree.sha,
+      base_tree: baseTreeSha || undefined,
       tree: treeItems,
     });
+
     const { data: newCommit } = await octokit.git.createCommit({
       owner,
       repo,
       message: "Initial setup for GitHub Pages",
       tree: newTree.sha,
-      parents: [baseCommitSha],
+      parents: baseCommitSha ? [baseCommitSha] : [],
     });
-    await octokit.git.updateRef({
-      owner,
-      repo,
-      ref: `heads/${branch}`,   // ← こちらも修正
-      sha: newCommit.sha,
-    });
+
+    if (baseCommitSha) {
+      await octokit.git.updateRef({
+        owner,
+        repo,
+        ref: `heads/${branch}`,
+        sha: newCommit.sha,
+      });
+    } else {
+      await octokit.git.createRef({
+        owner,
+        repo,
+        ref: `refs/heads/${branch}`,
+        sha: newCommit.sha,
+      });
+    }
 
     return res.json({ ok: true });
   } catch (err) {
-    console.error("❌ init error:", err);
-    return res
-      .status(err.status || 500)
-      .json({ ok: false, error: err.message });
+    console.error("init error:", err);
+    return res.status(err.status || 500).json({ ok: false, error: err.message });
   }
 }

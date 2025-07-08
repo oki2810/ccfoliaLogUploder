@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const githubUploadBtn  = document.getElementById("githubUploadBtn");
   const githubStatus     = document.getElementById("githubStatus");
   const githubDisconnectBtn = document.getElementById("githubDisconnectBtn");
+  const createRepoBtn    = document.getElementById("createRepoBtn");
+  const initRepoBtn      = document.getElementById("initRepoBtn");
 
   const uploadHtml       = document.getElementById("uploadHtml");
   const formatBtn        = document.getElementById("formatBtn");
@@ -71,12 +73,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         ownerName = data.username || "";
         githubDisconnectBtn.style.display = "inline-block";
+        createRepoBtn.style.display = "inline-block";
+        initRepoBtn.style.display = "inline-block";
         updateViewBtn();
       } else {
         authSection.style.display = "block";
         repoSettings.style.display = "none";
         if (loginInfo) loginInfo.style.display = "none";
         githubDisconnectBtn.style.display = "none";
+        createRepoBtn.style.display = "none";
+        initRepoBtn.style.display = "none";
         ownerName = "";
       }
     })
@@ -94,6 +100,69 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
   repoInput.addEventListener("input", updateViewBtn);
+
+  // --- リポジトリ作成 ---
+  createRepoBtn.addEventListener("click", async () => {
+    const repo = repoInput.value.trim();
+    if (!repo) return alert("リポジトリ名を入力してください");
+
+    githubStatus.textContent = "リポジトリを作成中…";
+
+    try {
+      const res = await fetch("/api/create-repo", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": getCsrfToken(),
+        },
+        body: JSON.stringify({ name: repo }),
+      });
+      const result = await res.json();
+
+      if (result.ok) {
+        githubStatus.innerHTML = `<div class="alert alert-success">リポジトリ「${repo}」を作成しました！</div>`;
+        updateViewBtn();
+      } else {
+        githubStatus.innerHTML = `<div class="alert alert-danger">作成失敗: ${result.error}</div>`;
+      }
+    } catch (err) {
+      console.error(err);
+      githubStatus.innerHTML = '<div class="alert alert-danger">通信エラーが発生しました</div>';
+    }
+  });
+
+  // --- 初期設定 ---
+  initRepoBtn.addEventListener("click", async () => {
+    const repo = repoInput.value.trim();
+    if (!ownerName || !repo) {
+      return alert("GitHub連携とリポジトリ名を確認してください");
+    }
+
+    githubStatus.textContent = "初期設定を実行中…";
+
+    try {
+      const res = await fetch("/api/init", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": getCsrfToken(),
+        },
+        body: JSON.stringify({ owner: ownerName, repo }),
+      });
+      const result = await res.json();
+      if (result.ok) {
+        githubStatus.innerHTML = `<div class="alert alert-success">初期設定が完了しました！</div>`;
+        updateViewBtn();
+      } else {
+        githubStatus.innerHTML = `<div class="alert alert-danger">初期設定失敗: ${result.error}</div>`;
+      }
+    } catch (err) {
+      console.error(err);
+      githubStatus.innerHTML = '<div class="alert alert-danger">通信エラーが発生しました</div>';
+    }
+  });
 
   // --- GitHub へのコミット ---
   githubUploadBtn.addEventListener("click", async () => {
