@@ -39,7 +39,48 @@ export default async function handler(req, res) {
       });
       baseTreeSha = baseCommit.tree.sha;
     } catch (err) {
-      if (err.status !== 404) throw err;
+      if (err.status === 404) {
+        // create initial README commit when repository is empty
+        const { data: readmeBlob } = await octokit.git.createBlob({
+          owner,
+          repo,
+          content: "# \u521d\u671f\u5316",
+          encoding: "utf-8",
+        });
+
+        const { data: tree } = await octokit.git.createTree({
+          owner,
+          repo,
+          tree: [
+            {
+              path: "README.md",
+              mode: "100644",
+              type: "blob",
+              sha: readmeBlob.sha,
+            },
+          ],
+        });
+
+        const { data: commit } = await octokit.git.createCommit({
+          owner,
+          repo,
+          message: "\u521d\u56de\u30b3\u30df\u30c3\u30c8: README\u8ffd\u52a0",
+          tree: tree.sha,
+          parents: [],
+        });
+
+        await octokit.git.createRef({
+          owner,
+          repo,
+          ref: `refs/heads/${branch}`,
+          sha: commit.sha,
+        });
+
+        baseCommitSha = commit.sha;
+        baseTreeSha = tree.sha;
+      } else {
+        throw err;
+      }
     }
 
     const INIT_INDEX = `<!DOCTYPE html>
