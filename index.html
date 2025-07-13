@@ -82,11 +82,57 @@
         </div>
       </div>
 
-      <!-- ② HTML整形・アップロードセクション（以下省略） -->
+      <!-- ② HTML整形・アップロードセクション -->
       <div class="card mb-4">
         <div class="card-header">② HTML 整形・アップロード</div>
         <div class="card-body">
-          <!-- 略 -->
+          <div class="mb-3">
+            <label for="uploadHtml" class="form-label"
+              >整形したい HTML をアップロード</label
+            >
+            <input
+              class="form-control"
+              type="file"
+              id="uploadHtml"
+              accept=".html"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="filenameInput" class="form-label">シナリオ名</label>
+            <input
+              type="text"
+              id="filenameInput"
+              class="form-control"
+              placeholder="例: サンプルシナリオ"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="linknameInput" class="form-label">リンク名</label>
+            <input
+              type="text"
+              id="linknameInput"
+              class="form-control"
+              pattern="[0-9A-Za-z]*"
+              title="半角英数字のみ"
+              placeholder="例: samplescenario"
+            />
+          </div>
+          <button id="formatBtn" class="btn btn-secondary me-2">修正</button>
+          <button id="githubUploadBtn" class="btn btn-primary me-2">
+            GitHub にコミット
+          </button>
+          <button
+            id="viewProjectBtn"
+            class="btn btn-secondary"
+            style="display: none;"
+          >
+            ログ一覧ページを開く
+          </button>
+          <pre
+            id="formattedOutput"
+            class="mt-3 border p-3"
+            style="height: 150px; overflow: auto;"
+          ></pre>
           <div id="githubStatus" class="mt-2"></div>
         </div>
       </div>

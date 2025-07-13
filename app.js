@@ -116,6 +116,63 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- 以下、②の処理は変更なし ---
-  // GitHub へのコミット、HTML整形 など省略
+  // --- GitHub へのコミット ---
+  githubUploadBtn.addEventListener("click", async () => {
+    const out = formattedOutput.textContent;
+    const repo = repoInput.value.trim();
+    const path = pathInput.value.trim();
+    const linkText = linknameInput.value.trim();
+    const scenarioName = filenameInput.value.trim();
+
+    if (!out) return alert("まずは「修正」ボタンで整形してください");
+    if (!ownerName || !repo || !path)
+      return alert("リポジトリ情報をすべて入力してください");
+
+    githubStatus.textContent = "送信中…";
+    try {
+      const formData = new FormData();
+      formData.append(
+        "htmlFile",
+        new Blob([out], { type: "text/html" }),
+        path.split("/").pop()
+      );
+      formData.append("owner", ownerName);
+      formData.append("repo", repo);
+      formData.append("path", path);
+      formData.append("linkText", linkText);
+      formData.append("scenarioName", scenarioName);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        credentials: "include",
+        headers: { "X-CSRF-Token": getCsrfToken() },
+        body: formData,
+      });
+      const result = await res.json();
+      if (result.ok) {
+        githubStatus.innerHTML =
+          '<div class="alert alert-success">GitHub へのコミットに成功しました！<br>反映まで5分ほどお待ち下さい！</div>';
+      } else {
+        githubStatus.innerHTML = `<div class="alert alert-danger">エラー: ${result.error}</div>`;
+      }
+    } catch (err) {
+      console.error(err);
+      githubStatus.innerHTML = '<div class="alert alert-danger">通信エラーが発生しました</div>';
+    }
+  });
+
+  // --- HTML 整形 ---
+  formatBtn.addEventListener("click", () => {
+    if (!uploadHtml.files.length)
+      return alert("整形したい HTML ファイルを選択してください");
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      let html = e.target.result;
+      const robotsMeta = '<meta name="robots" content="noindex,nofollow">';
+      const norobotScript = '<script src="norobot.js"></scr' + 'ipt>';
+      html = html.replace(/<\/head>/i, robotsMeta + "\n" + norobotScript + "\n</head>");
+      formattedOutput.textContent = html;
+    };
+    reader.readAsText(uploadHtml.files[0]);
+  });
 });
