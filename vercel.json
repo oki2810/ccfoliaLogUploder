@@ -7,5 +7,9 @@
   "routes": [
     { "src": "/api/(.*)", "dest": "api/$1.js" },
     { "src": "/(.*)", "dest": "public/$1" }
-  ]
+  ],
+  "env": {
+    "TEMPLATE_OWNER": "@template-owner",
+    "TEMPLATE_REPO": "@template-repo"
+  }
 }
