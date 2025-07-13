@@ -10,6 +10,11 @@
   ],
   "env": {
     "TEMPLATE_OWNER": "@template-owner",
-    "TEMPLATE_REPO": "@template-repo"
+    "TEMPLATE_REPO": "@template-repo",
+    "GH_CLIENT_ID": "@gh-client-id",
+    "GH_CLIENT_SECRET": "@gh-client-secret",
+    "SESSION_SECRET": "@session-secret",
+    "WEBHOOK_SECRET": "@webhook-secret",
+    "AUTH_CALLBACK_URL": "@auth-callback-url"
   }
 }
