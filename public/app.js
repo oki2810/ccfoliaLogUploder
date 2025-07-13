@@ -29,12 +29,14 @@ document.addEventListener("DOMContentLoaded", () => {
   let ownerName = "";
 
   // リンク名 → path 同期
-  const syncPath = () => {
-    const name = linknameInput.value.trim() || "test";
-    pathInput.value = `log/${name}.html`;
-  };
-  linknameInput.addEventListener("input", syncPath);
-  syncPath();
+  if (linknameInput && pathInput) {
+    const syncPath = () => {
+      const name = linknameInput.value.trim() || "test";
+      pathInput.value = `log/${name}.html`;
+    };
+    linknameInput.addEventListener("input", syncPath);
+    syncPath();
+  }
 
   // --- GitHub OAuth 開始・解除 ---
   githubConnectBtn.addEventListener("click", () => {
@@ -72,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // プロジェクト公開リンク更新
   function updateViewBtn() {
+    if (!viewProjectBtn) return;
     const repo = repoInput.value.trim();
     if (ownerName && repo) {
       const url = `https://${ownerName}.github.io/${repo}/`;
