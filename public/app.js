@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const repoSettings       = document.getElementById("repoSettings");
   const repoInput          = document.getElementById("repoInput");
   const pathInput          = document.getElementById("pathInput");
+  const useExistingBtn     = document.getElementById("useExistingBtn");
   const createAndInitBtn   = document.getElementById("createAndInitBtn");
   const initStatus         = document.getElementById("initStatus");   // ← 追加
 
@@ -112,6 +113,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
   repoInput.addEventListener("input", updateViewBtn);
+
+  // --- 既存リポジトリ利用チェック ---
+  useExistingBtn.addEventListener("click", async () => {
+    const repo = repoInput.value.trim();
+    if (!repo) return alert("リポジトリ名を入力してください");
+
+    initStatus.textContent = "リポジトリを確認中…";
+
+    try {
+      const res = await fetch("/api/check-repo", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": getCsrfToken(),
+        },
+        body: JSON.stringify({ owner: ownerName, repo }),
+      });
+      const result = await res.json();
+      if (result.ok) {
+        initStatus.innerHTML = `<div class="alert alert-success">既存リポジトリを使用します</div>`;
+        updateViewBtn();
+      } else {
+        initStatus.innerHTML = `<div class="alert alert-danger">エラー: ${result.error}</div>`;
+      }
+    } catch (err) {
+      console.error(err);
+      initStatus.innerHTML = `<div class="alert alert-danger">通信エラーが発生しました</div>`;
+    }
+  });
 
   // --- リポジトリ作成＆初期化 ---
   createAndInitBtn.addEventListener("click", async () => {
