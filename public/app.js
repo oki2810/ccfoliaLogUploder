@@ -228,8 +228,9 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.onload = (e) => {
       let html = e.target.result;
       const robotsMeta = '<meta name="robots" content="noindex,nofollow">';
+      const fontStyle = '<style>* { font-family: sans-serif !important; }</style>';
       const norobotScript = '<script src="norobot.js"></scr' + 'ipt>';
-      html = html.replace(/<\/head>/i, robotsMeta + "\n" + norobotScript + "\n</head>");
+      html = html.replace(/<\/head>/i, robotsMeta + "\n" + fontStyle + "\n" + norobotScript + "\n</head>");
       formattedOutput.textContent = html;
     };
     reader.readAsText(uploadHtml.files[0]);
