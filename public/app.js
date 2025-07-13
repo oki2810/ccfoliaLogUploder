@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const formattedOutput    = document.getElementById("formattedOutput");
   const githubUploadBtn    = document.getElementById("githubUploadBtn");
   const viewProjectBtn     = document.getElementById("viewProjectBtn");
+  const viewRepoBtn        = document.getElementById("viewRepoBtn");
   const githubStatus       = document.getElementById("githubStatus");
 
   // タブ切り替え要素
@@ -100,16 +101,21 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-  // プロジェクト公開リンク更新
+  // プロジェクト公開リンク・リポジトリリンク更新
   function updateViewBtn() {
-    if (!viewProjectBtn) return;
+    if (!viewProjectBtn || !viewRepoBtn) return;
     const repo = repoInput.value.trim();
     if (ownerName && repo) {
-      const url = `https://${ownerName}.github.io/${repo}/`;
-      viewProjectBtn.onclick = () => window.open(url, "_blank");
+      const pageUrl = `https://${ownerName}.github.io/${repo}/`;
+      viewProjectBtn.onclick = () => window.open(pageUrl, "_blank");
       viewProjectBtn.style.display = "inline-block";
+
+      const repoUrl = `https://github.com/${ownerName}/${repo}`;
+      viewRepoBtn.onclick = () => window.open(repoUrl, "_blank");
+      viewRepoBtn.style.display = "inline-block";
     } else {
       viewProjectBtn.style.display = "none";
+      viewRepoBtn.style.display = "none";
     }
   }
   repoInput.addEventListener("input", updateViewBtn);
