@@ -31,8 +31,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // タブ切り替え要素
   const tabCCU = document.getElementById("tabCCU");
   const tabUsage = document.getElementById("tabUsage");
+  const tabFeature = document.getElementById("tabFeature");
   const ccuContent = document.getElementById("ccuContent");
   const usageContent = document.getElementById("usageContent");
+  const featureContent = document.getElementById("featureContent");
 
   let ownerName = "";
 
@@ -48,22 +50,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- タブ切り替え ---
   function activateTab(target) {
-    if (!tabCCU || !tabUsage || !ccuContent || !usageContent) return;
+    if (!tabCCU || !tabUsage || !tabFeature || !ccuContent || !usageContent || !featureContent) return;
     if (target === "ccu") {
       tabCCU.classList.add("active");
       tabUsage.classList.remove("active");
+      tabFeature.classList.remove("active");
       ccuContent.style.display = "block";
       usageContent.style.display = "none";
-    } else {
+      featureContent.style.display = "none";
+    } else if (target === "usage") {
       tabUsage.classList.add("active");
       tabCCU.classList.remove("active");
+      tabFeature.classList.remove("active");
       ccuContent.style.display = "none";
       usageContent.style.display = "block";
+      featureContent.style.display = "none";
+    } else if (target === "feature") {
+      tabFeature.classList.add("active");
+      tabCCU.classList.remove("active");
+      tabUsage.classList.remove("active");
+      ccuContent.style.display = "none";
+      usageContent.style.display = "none";
+      featureContent.style.display = "block";
     }
   }
-  if (tabCCU && tabUsage) {
+  if (tabCCU && tabUsage && tabFeature) {
     tabCCU.addEventListener("click", () => activateTab("ccu"));
     tabUsage.addEventListener("click", () => activateTab("usage"));
+    tabFeature.addEventListener("click", () => activateTab("feature"));
     activateTab("ccu");
   }
 
