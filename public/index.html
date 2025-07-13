@@ -161,12 +161,139 @@
         <div class="card mb-4">
           <div class="card-body">
             <h2 class="h5 mb-3">使い方</h2>
-            <ol class="mb-0">
-              <li>GitHub と連携し、リポジトリを作成または指定します。</li>
-              <li>整形したい <code>log.html</code> を選択します。</li>
-              <li>シナリオ名とリンク名を入力し「修正」を押します。</li>
-              <li>「GitHub にコミット」ボタンでアップロードします。</li>
-              <li>完了後は「ログ一覧ページを開く」から確認できます。</li>
+
+            <h3>はじめに</h3>
+            <p>ここでは検索避けをした状態でログページを公開するアプリ、CCUの使い方を紹介します。</p>
+            <hr />
+
+            <h3>1. GitHub アカウントの準備</h3>
+            <ol>
+              <li>
+                <a href="https://github.com" target="_blank" rel="noopener"
+                  >GitHub</a
+                > にアクセスし、新規アカウントを作成します。
+                <ul>
+                  <li>
+                    メールアドレスとパスワードを登録し、メール認証を済ませて
+                    ください。
+                  </li>
+                </ul>
+              </li>
+            </ol>
+            <hr />
+
+            <h3>2. GitHub とツールの連携</h3>
+            <h4>初回の設定</h4>
+            <ol>
+              <li>本ツール画面で「GitHub と連携」ボタンをクリック。</li>
+              <li>GitHub 側で認可画面が開くので、アクセスを許可します。</li>
+              <li>
+                初期設定画面が表示されたら、任意のリポジトリ名を入力し、「初期
+                設定」ボタンを押します。
+                <ul>
+                  <li>
+                    リポジトリ名は何でも OK（例：<code>my-log-page</code>）
+                  </li>
+                </ul>
+              </li>
+              <li>
+                「初期設定が完了しました！」と出たら、その下にあるリンクを
+                クリックして GitHub 側の設定画面へ移動。
+              </li>
+              <li>
+                「Build and deployment」セクションにある
+                <ul>
+                  <li>
+                    <strong>Branch</strong> の項目を <code>none</code> →
+                    <code>main</code> に変更
+                  </li>
+                  <li><strong>Save</strong> ボタンで保存</li>
+                </ul>
+              </li>
+              <li>
+                画面上部が「main ▼」「 / (root) 」 「Save（グレー）」と表示されてい
+                れば設定完了です。
+              </li>
+              <li>
+                現在上から二段目にあるタブ一覧で<strong>Setting</strong>にいるので、一
+                番左の<strong>Code</strong> を開き、
+                <ul>
+                  <li><code>README.md</code> の右にある鉛筆マークをクリックして</li>
+                  <li>
+                    テキスト欄に <code>ok</code> と入力 → <strong>Commit Change</strong>
+                    を押します。ポップアップが表示されたら何も変更せず<strong>
+                      Commit Change</strong
+                    >を押してください。
+                  </li>
+                </ul>
+              </li>
+              <li>CCUに戻ります。</li>
+            </ol>
+            <h4>2 回目以降の設定</h4>
+            <ol>
+              <li>本ツール画面で、以前に設定したリポジトリ名を入力。</li>
+              <li>「既存リポジトリを使用」ボタンを押すだけで OK。</li>
+            </ol>
+            <hr />
+
+            <h3>3. HTML ファイルのアップロード</h3>
+            <ol>
+              <li>
+                整形したい HTML ファイルを選択。
+                <ul>
+                  <li>
+                    ココフォリア標準出力の HTML、または以下の外部ツールで加工
+                    した HTML も利用可
+                    <ul>
+                      <li>
+                        <a
+                          href="https://kanonn.chips.jp/converterV2/"
+                          target="_blank"
+                          rel="noopener"
+                          >ココフォリアログ変換ツール</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          href="https://log-formatter.herokuapp.com/dark"
+                          target="_blank"
+                          rel="noopener"
+                          >Ccfolia Log Formatter</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          href="https://inouemoku.github.io/mochimochi/"
+                          target="_blank"
+                          rel="noopener"
+                          >MochiMochi - ココフォリアログ整形ツール</a
+                        >
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                シナリオ名（日本語可）とリンク名（半角英数字のみ）を入力し、「修
+                正」ボタンを押します。
+              </li>
+              <li>
+                画面下部に整形済みデータが出力されるのを確認したら、「GitHub に
+                コミット」ボタンでアップロード。
+              </li>
+              <li>
+                コミット後、公開まで約 5 分かかります。
+                <ul>
+                  <li>
+                    しばらく待ってから「ログ一覧ページを開く」リンクをクリック
+                    し、正常に反映されているか確認。
+                  </li>
+                </ul>
+              </li>
+              <li>
+                完了したログ一覧ページはブラウザのブックマークに登録しておくと、
+                いつでもアクセスできます。
+              </li>
             </ol>
           </div>
         </div>
