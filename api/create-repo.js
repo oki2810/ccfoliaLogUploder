@@ -17,11 +17,13 @@ export default async function handler(req, res) {
   const octokit = new Octokit({ auth: token });
 
   try {
-    const { data: repo } = await octokit.rest.repos.createForAuthenticatedUser({
+    const { data: repo } = await octokit.rest.repos.createUsingTemplate({
+      template_owner: process.env.TEMPLATE_OWNER,
+      template_repo: process.env.TEMPLATE_REPO,
       name,
       description: description || "CCUログ用GitHub Pagesリポジトリ",
       private: false,
-      auto_init: false,
+      include_all_branches: false,
     });
     return res.json({ ok: true, repo: repo.full_name });
   } catch (err) {
