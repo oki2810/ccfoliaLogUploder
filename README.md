@@ -1,17 +1,11 @@
 # CCU - ココフォリアログアップローダー
 
-このツールは、ココフォリアのログ（log.html）を読みやすく整えて、あなたの GitHub のプロジェクトに追加するためのものです。
+このツールは、ココフォリアのログ（log.html）を読みやすく整えて、GitHub のプロジェクトに追加するためのものです。
 
-使い方
+## 使い方
 GitHub を準備する
 GitHub のアカウントがない場合は GitHub に登録します。
 画面右上の「＋」から「新しいリポジトリ」を作り、名前を決めます。
-
-GitHub OAuth アプリを登録する
-連携を自分の環境で使う場合は、GitHub の OAuth App に
-`https://<あなたのドメイン>/api/auth/github-callback`
-を Callback URL として登録し、同じ URL を `.env` の
-`AUTH_CALLBACK_URL` に設定してください。
 
 サイトを開く
 ブラウザで https://ccfolia-log-uploader.vercel.app/ を開きます。
