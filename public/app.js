@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const pathInput          = document.getElementById("pathInput");
   const useExistingBtn     = document.getElementById("useExistingBtn");
   const createAndInitBtn   = document.getElementById("createAndInitBtn");
-  const initStatus         = document.getElementById("initStatus");   // ← 追加
+  const initStatus         = document.getElementById("initStatus");
 
   const uploadHtml         = document.getElementById("uploadHtml");
   const formatBtn          = document.getElementById("formatBtn");
@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       const result = await res.json();
       if (result.ok) {
-        initStatus.innerHTML = `<div class="alert alert-success">既存リポジトリを使用します</div>`;
+        initStatus.innerHTML = `<div class="alert alert-success">既存リポジトリを使用します。</div>`;
         updateViewBtn();
       } else {
         initStatus.innerHTML = `<div class="alert alert-danger">エラー: ${result.error}</div>`;
