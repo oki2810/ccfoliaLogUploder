@@ -163,7 +163,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       const result = await res.json();
       if (result.ok) {
-        initStatus.innerHTML = `<div class="alert alert-success">リポジトリ作成が完了しました！<br>こちら<a href="https://github.com/yoshikawa04/terst/settings" target="_blank" rel="noopener noreferrer">https://github.com/yoshikawa04/terst/settings/pages</a>からPage設定を行ってください！</div>`;
+        const pagesUrl = `https://github.com/${ownerName}/${repo}/settings/pages`;
+        initStatus.innerHTML = `<div class="alert alert-success">リポジトリ作成が完了しました！<br>こちら<a href="${pagesUrl}" target="_blank" rel="noopener noreferrer">${pagesUrl}</a>からPage設定を行ってください！</div>`;
         updateViewBtn();
       } else {
         initStatus.innerHTML = `<div class="alert alert-danger">エラー: ${result.error}</div>`;
