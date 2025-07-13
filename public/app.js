@@ -101,6 +101,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
+  // リポジトリ名入力必須チェック
+  function requireRepo() {
+    if (!repoInput.value.trim()) {
+      alert("リポジトリ名を入力してください");
+      return false;
+    }
+    return true;
+  }
+
   // プロジェクト公開リンク・リポジトリリンク更新
   function updateViewBtn() {
     if (!viewProjectBtn || !viewRepoBtn) return;
@@ -108,17 +117,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (ownerName && repo) {
       const pageUrl = `https://${ownerName}.github.io/${repo}/`;
       viewProjectBtn.onclick = () => window.open(pageUrl, "_blank");
-      viewProjectBtn.style.display = "inline-block";
 
       const repoUrl = `https://github.com/${ownerName}/${repo}`;
       viewRepoBtn.onclick = () => window.open(repoUrl, "_blank");
-      viewRepoBtn.style.display = "inline-block";
     } else {
-      viewProjectBtn.style.display = "none";
-      viewRepoBtn.style.display = "none";
+      viewProjectBtn.onclick = () => alert("リポジトリ名を入力してください");
+      viewRepoBtn.onclick = () => alert("リポジトリ名を入力してください");
     }
+    viewProjectBtn.style.display = "inline-block";
+    viewRepoBtn.style.display = "inline-block";
   }
   repoInput.addEventListener("input", updateViewBtn);
+  updateViewBtn();
 
   // --- 既存リポジトリ利用チェック ---
   useExistingBtn.addEventListener("click", async () => {
@@ -183,6 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- GitHub へのコミット ---
   githubUploadBtn.addEventListener("click", async () => {
+    if (!requireRepo()) return;
     const out = formattedOutput.textContent;
     const repo = repoInput.value.trim();
     const path = pathInput.value.trim();
@@ -190,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const scenarioName = filenameInput.value.trim();
 
     if (!out) return alert("まずは「修正」ボタンで整形してください");
-    if (!ownerName || !repo || !path)
+    if (!ownerName || !path)
       return alert("リポジトリ情報をすべて入力してください");
 
     githubStatus.textContent = "送信中…";
@@ -228,6 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- HTML 整形 ---
   formatBtn.addEventListener("click", () => {
+    if (!requireRepo()) return;
     if (!uploadHtml.files.length)
       return alert("整形したい HTML ファイルを選択してください");
     const reader = new FileReader();
