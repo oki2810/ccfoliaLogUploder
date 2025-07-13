@@ -24,7 +24,9 @@
       }
     }
     #usageContent p,
-    #usageContent li {
+    #usageContent li,
+    #featuresContent p,
+    #featuresContent li {
       line-height: 1.9;
     }
     @media (max-width: 578px) {
@@ -53,6 +55,9 @@
         </li>
         <li class="nav-item">
           <button class="nav-link" id="tabUsage" type="button">使い方</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" id="tabFeatures" type="button">特徴</button>
         </li>
       </ul>
 
@@ -327,6 +332,63 @@
               </li>
             </ol>
           </div>
+        </div>
+      </div>
+
+      <div id="featuresContent" style="display: none;">
+        <div class="container py-4">
+          <h2 class="mb-4">CCUの特徴</h2>
+
+          <p>
+            <strong>CCU</strong>は、<span class="text-primary">ココフォリアのログHTMLを検索避け付きでWEB公開できる</span>ツールです。
+          </p>
+
+          <p>
+            従来のHTML形式（ココフォリアや整形ツールからのログ出力）には、以下のような課題がありました。
+          </p>
+
+          <hr>
+
+          <h4 class="mt-4">1.PC・スマホ両方での管理が煩雑</h4>
+          <ul>
+            <li><strong>PCとスマホ両方</strong>にログHTMLをダウンロードする必要がある</li>
+            <li>ログファイルが<strong>端末容量を圧迫</strong>する</li>
+            <li>数が増えるほど<strong>ファイル整理が面倒</strong>になる</li>
+          </ul>
+
+          <h4 class="mt-4">2.一部環境では整形ツールの機能が使えない</h4>
+          <ul>
+            <li><strong>「表示・非表示」</strong>などの機能が一部のブラウザや端末では正常に動作しないことがある</li>
+          </ul>
+
+          <hr>
+
+          <h4 class="mt-4">CCUは<strong class="text-success">GitHub Pages</strong>を活用し、以下のことが可能になります。</h4>
+
+         <ul>
+            <li><strong>WEB上</strong>にログHTMLをアップロードし、<span class="text-primary">URLから簡単にアクセス可能</span></li>
+            <li><strong>検索避け（noindex）</strong>を適用し、<span class="text-danger">ネタバレやプライバシー</span>に配慮</li>
+            <li><span class="text-success">誰でも無料</span>でログ専用の公開サイトを作成できる</li>
+            <li>スマホでもPCでも、<strong>常に最新のログ</strong>にアクセスできる</li>
+            <li><strong>公開後の差し替えや更新</strong>も簡単で、<span class="text-muted">長期的な管理が楽</span></li>
+          </ul>
+
+          <p class="mt-3">
+            <strong>「表示崩れなく、軽くて便利で、検索に引っかからない」</strong><br>
+            そんなログ公開を、<span class="text-success"><strong>誰でもすぐに実現</strong></span>できるのが<strong>CCU</strong>です。
+          </p>
+
+          <hr>
+
+          <h4 class="mt-4">免責事項・お問い合わせ</h4>
+          <ul>
+            <li>本ツールは<strong>個人により開発</strong>された非公式ツールです。</li>
+            <li><strong>GitHub</strong>および<strong>ココフォリア</strong>、<strong>各種整形ツール</strong>とは一切関係がありません。</li>
+            <li>使用によって発生した<strong>いかなる損害</strong>にも、開発者は責任を負いかねます。</li>
+            <li>バグ報告や改善要望などありましたら、下記までご連絡ください。</li>
+          </ul>
+
+          <p><strong>Discord：</strong><code>sasami8882</code></p>
         </div>
       </div>
 

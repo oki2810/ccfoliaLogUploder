@@ -31,8 +31,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // タブ切り替え要素
   const tabCCU = document.getElementById("tabCCU");
   const tabUsage = document.getElementById("tabUsage");
+  const tabFeatures = document.getElementById("tabFeatures");
   const ccuContent = document.getElementById("ccuContent");
   const usageContent = document.getElementById("usageContent");
+  const featuresContent = document.getElementById("featuresContent");
 
   let ownerName = "";
 
@@ -48,22 +50,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- タブ切り替え ---
   function activateTab(target) {
-    if (!tabCCU || !tabUsage || !ccuContent || !usageContent) return;
-    if (target === "ccu") {
-      tabCCU.classList.add("active");
-      tabUsage.classList.remove("active");
-      ccuContent.style.display = "block";
-      usageContent.style.display = "none";
-    } else {
-      tabUsage.classList.add("active");
-      tabCCU.classList.remove("active");
-      ccuContent.style.display = "none";
-      usageContent.style.display = "block";
+    if (!tabCCU || !tabUsage || !tabFeatures || !ccuContent || !usageContent || !featuresContent) return;
+    const tabs = { ccu: tabCCU, usage: tabUsage, features: tabFeatures };
+    const contents = { ccu: ccuContent, usage: usageContent, features: featuresContent };
+    for (const key in tabs) {
+      if (key === target) {
+        tabs[key].classList.add("active");
+        contents[key].style.display = "block";
+      } else {
+        tabs[key].classList.remove("active");
+        contents[key].style.display = "none";
+      }
     }
   }
-  if (tabCCU && tabUsage) {
+  if (tabCCU && tabUsage && tabFeatures) {
     tabCCU.addEventListener("click", () => activateTab("ccu"));
     tabUsage.addEventListener("click", () => activateTab("usage"));
+    tabFeatures.addEventListener("click", () => activateTab("features"));
     activateTab("ccu");
   }
 
