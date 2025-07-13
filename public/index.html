@@ -27,6 +27,17 @@
     #usageContent li {
       line-height: 1.9;
     }
+    @media (max-width: 578px) {
+      .responsive-frame {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .responsive-frame > .card-body {
+        padding: 0.5rem !important; /* 必要なら最低限の余白だけ確保 */
+      }
+    }
   </style>
   </head>
   <body>
@@ -164,9 +175,9 @@
       </div>
 
       <div id="usageContent" style="display: none;">
-        <div class="card mb-4">
+        <div class="card mb-4 responsive-frame">
         <div class="card-body">
-            <h2 class="h4 mb-3">使い方</h2>
+            <h5 class="card-title">使い方</h5>
             <p>ここでは検索避けをした状態でログページを公開するアプリ、CCUの使い方を紹介します。</p>
             <hr />
 
