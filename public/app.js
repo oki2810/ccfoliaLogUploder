@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       const result = await res.json();
       if (result.ok) {
-        initStatus.innerHTML = `<div class="alert alert-success">リポジトリ作成と初期設定が完了しました！</div>`;
+        initStatus.innerHTML = `<div class="alert alert-success">リポジトリ作成が完了しました！　こちら<a href="https://github.com/yoshikawa04/terst/settings" target="_blank" rel="noopener noreferrer">https://github.com/yoshikawa04/terst/settings</a>からPage設定を行ってください！</div>`;
         updateViewBtn();
       } else {
         initStatus.innerHTML = `<div class="alert alert-danger">エラー: ${result.error}</div>`;
