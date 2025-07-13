@@ -26,6 +26,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const viewProjectBtn     = document.getElementById("viewProjectBtn");
   const githubStatus       = document.getElementById("githubStatus");
 
+  // タブ切り替え要素
+  const tabCCU = document.getElementById("tabCCU");
+  const tabUsage = document.getElementById("tabUsage");
+  const ccuContent = document.getElementById("ccuContent");
+  const usageContent = document.getElementById("usageContent");
+
   let ownerName = "";
 
   // リンク名 → path 同期
@@ -36,6 +42,27 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     linknameInput.addEventListener("input", syncPath);
     syncPath();
+  }
+
+  // --- タブ切り替え ---
+  function activateTab(target) {
+    if (!tabCCU || !tabUsage || !ccuContent || !usageContent) return;
+    if (target === "ccu") {
+      tabCCU.classList.add("active");
+      tabUsage.classList.remove("active");
+      ccuContent.style.display = "block";
+      usageContent.style.display = "none";
+    } else {
+      tabUsage.classList.add("active");
+      tabCCU.classList.remove("active");
+      ccuContent.style.display = "none";
+      usageContent.style.display = "block";
+    }
+  }
+  if (tabCCU && tabUsage) {
+    tabCCU.addEventListener("click", () => activateTab("ccu"));
+    tabUsage.addEventListener("click", () => activateTab("usage"));
+    activateTab("ccu");
   }
 
   // --- GitHub OAuth 開始・解除 ---
