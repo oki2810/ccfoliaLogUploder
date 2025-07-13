@@ -33,6 +33,17 @@
         GitHub リポジトリにコミットできるツールです。
       </p>
 
+      <ul class="nav nav-tabs mb-4" id="tabNav">
+        <li class="nav-item">
+          <button class="nav-link active" id="tabCCU" type="button">CCU</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" id="tabUsage" type="button">使い方</button>
+        </li>
+      </ul>
+
+      <div id="ccuContent">
+
       <!-- ① GitHub連携セクション -->
       <div class="card mb-4">
         <div class="card-header">① GitHub 連携</div>
@@ -134,6 +145,24 @@
             style="height: 150px; overflow: auto;"
           ></pre>
           <div id="githubStatus" class="mt-2"></div>
+        </div>
+
+      </div>
+      <!-- /#ccuContent -->
+      </div>
+
+      <div id="usageContent" style="display: none;">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h2 class="h5 mb-3">使い方</h2>
+            <ol class="mb-0">
+              <li>GitHub と連携し、リポジトリを作成または指定します。</li>
+              <li>整形したい <code>log.html</code> を選択します。</li>
+              <li>シナリオ名とリンク名を入力し「修正」を押します。</li>
+              <li>「GitHub にコミット」ボタンでアップロードします。</li>
+              <li>完了後は「ログ一覧ページを開く」から確認できます。</li>
+            </ol>
+          </div>
         </div>
       </div>
 
