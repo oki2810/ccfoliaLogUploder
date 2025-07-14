@@ -11,11 +11,10 @@
     "start": "vercel dev"
   },
   "dependencies": {
-    "@octokit/rest": "20.1.0",
     "axios": "1.5.0",
     "cookie": "0.5.0",
-    "formidable": "^3.5.4",
+    "multer": "1.0.0",
     "joi": "17.9.2",
-    "multer": "1.0.0"
+    "@octokit/rest": "20.1.0"
   }
 }
