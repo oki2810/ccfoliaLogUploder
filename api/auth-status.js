@@ -1,6 +1,8 @@
 import { Octokit } from "@octokit/rest";
+import applyCors from "../lib/cors.js";
 
 export default async function handler(req, res) {
+  if (applyCors(req, res)) return;
   const cookies = Object.fromEntries(
     (req.headers.cookie || "").split("; ").map(c => c.split("="))
   );

@@ -1,5 +1,6 @@
 import fs from "fs";
 import * as nodePath from "path";
+import applyCors from "../lib/cors.js";
 import multer from "multer";
 import { Octokit } from "@octokit/rest";
 import Joi from "joi";
@@ -14,26 +15,15 @@ const schema = Joi.object({
   scenarioName: Joi.string().max(100).required(),
 });
 
-const DEFAULT_INDEX = `<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ログ一覧</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-</head>
-<body>
-  <div class="container py-5">
-    <h1 class="mb-4">アップロード済みログ</h1>
-    <ul id="generatedList" class="list-group"></ul>
-  </div>
-  <script src="norobot.js"></script>
-</body>
-</html>`;
+function loadDefaultIndex() {
+  const p = nodePath.join(process.cwd(), "templates", "index.html");
+  return fs.readFileSync(p, "utf8");
+}
 
 export const config = { api: { bodyParser: false } };
 
 export default async function handler(req, res) {
+  if (applyCors(req, res)) return;
   // CSRF は Vercel Functions では自前実装になるので省略
   const cookies = Object.fromEntries(
     (req.headers.cookie || "").split("; ").map(c => c.split("="))
@@ -68,27 +58,27 @@ try {
 
   // ファイルはあるけど空っぽ（スペースだけ）だったらテンプレートに切り替え
   if (!html.trim()) {
-    html = DEFAULT_INDEX;
+    html = loadDefaultIndex();
   }
 } catch (err) {
   if (err.status === 404) {
     // ファイル自体がないときはテンプレートをまるっと流用
-    html = DEFAULT_INDEX;
+    html = loadDefaultIndex();
   } else {
     throw err;
   }
 }
 
-  const newItem = `<li class="list-group-item"><span class="text-muted">${scenarioName}</span><a href="${path}" class="ms-2">${linkText}</a></li>`;
-  if (html.match(/<ul[^>]+id="generatedList"/)) {
+  const newItem = `<li class="list-group-item"><span class="text-muted">${scenarioName}</span><a href="${path}" class="ms-2">${linkText}</a><button class="btn btn-sm btn-danger ms-2 delete-btn">削除</button></li>`;
+  if (html.match(/<ul[^>]+id="(?:generatedList|log-list)"/)) {
     html = html.replace(
-      /(<ul[^>]+id="generatedList"[^>]*>)/,
+      /(<ul[^>]+id="(?:generatedList|log-list)"[^>]*>)/,
       `$1\n  ${newItem}`
     );
   } else {
     html = html.replace(
       /<\/body>/i,
-      `  <ul id="generatedList" class="list-group">\n    ${newItem}\n  </ul>\n</body>`
+      `  <ul id="log-list" class="list-group">\n    ${newItem}\n  </ul>\n</body>`
     );
   }
 
