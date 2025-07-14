@@ -21,7 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const uploadHtml         = document.getElementById("uploadHtml");
   const formatBtn          = document.getElementById("formatBtn");
   const filenameInput      = document.getElementById("filenameInput");
-  const linknameInput      = document.getElementById("linknameInput");
   const formattedOutput    = document.getElementById("formattedOutput");
   const githubUploadBtn    = document.getElementById("githubUploadBtn");
   const viewProjectBtn     = document.getElementById("viewProjectBtn");
@@ -38,13 +37,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let ownerName = "";
 
-  // リンク名 → path 同期
-  if (linknameInput && pathInput) {
+  // シナリオ名 → path 同期
+  if (filenameInput && pathInput) {
     const syncPath = () => {
-      const name = linknameInput.value.trim() || "test";
+      const name = filenameInput.value.trim() || "test";
       pathInput.value = `log/${name}.html`;
     };
-    linknameInput.addEventListener("input", syncPath);
+    filenameInput.addEventListener("input", syncPath);
     syncPath();
   }
 
@@ -208,8 +207,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const out = formattedOutput.textContent;
     const repo = repoInput.value.trim();
     const path = pathInput.value.trim();
-    const linkText = linknameInput.value.trim();
     const scenarioName = filenameInput.value.trim();
+    const linkText = scenarioName;
 
     if (!out) return alert("まずは「修正」ボタンで整形してください");
     if (!ownerName || !path)
