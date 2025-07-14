@@ -80,8 +80,8 @@ export default async function handler(req, res) {
     });
 
     // 2) index.html を取得。なければ DEFAULT_INDEX を使う
-    let html: string;
-    let indexSha: string | null;
+    let html;
+    let indexSha;
     try {
       const idx = await octokit.repos.getContent({
         owner,
@@ -91,7 +91,7 @@ export default async function handler(req, res) {
       indexSha = idx.data.sha;
       html = Buffer.from(idx.data.content, "base64").toString("utf8");
       if (!html.trim()) html = DEFAULT_INDEX;
-    } catch (err: any) {
+    } catch (err) {
       if (err.status === 404) {
         html = DEFAULT_INDEX;
         indexSha = null;
@@ -163,12 +163,7 @@ window.CCU_CONFIG = { owner: '${owner}', repo: '${repo}' };
     });
 
     // tree に載せるアイテム
-    const treeItems: Array<{
-      path: string;
-      mode: "100644";
-      type: "blob";
-      sha: string;
-    }> = [
+    const treeItems = [
       { path: filePath, mode: "100644", type: "blob", sha: logBlob.sha },
       { path: "index.html", mode: "100644", type: "blob", sha: idxBlob.sha },
     ];
@@ -176,7 +171,7 @@ window.CCU_CONFIG = { owner: '${owner}', repo: '${repo}' };
     // norobot.js がなければ追加
     try {
       await octokit.repos.getContent({ owner, repo, path: "norobot.js" });
-    } catch (e: any) {
+    } catch (e) {
       if (e.status === 404) {
         const nb = fs.readFileSync(
           path.join(process.cwd(), "public", "norobot.js")
@@ -201,7 +196,7 @@ window.CCU_CONFIG = { owner: '${owner}', repo: '${repo}' };
     // loglist.js がなければ追加
     try {
       await octokit.repos.getContent({ owner, repo, path: "loglist.js" });
-    } catch (e: any) {
+    } catch (e) {
       if (e.status === 404) {
         const lb = fs.readFileSync(
           path.join(process.cwd(), "public", "loglist.js")
@@ -245,7 +240,7 @@ window.CCU_CONFIG = { owner: '${owner}', repo: '${repo}' };
     });
 
     return res.json({ ok: true });
-  } catch (err: any) {
+  } catch (err) {
     console.error("Upload API error:", err);
     return res
       .status(500)

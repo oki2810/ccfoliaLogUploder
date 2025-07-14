@@ -45,7 +45,7 @@ export default async function handler(req, res) {
     const liMatches = Array.from(
       html.matchAll(/<li[\s\S]*?<\/li>/g)
     );
-    const liMap: Record<string, string> = {};
+    const liMap = {};
     liMatches.forEach((m) => {
       const block = m[0];
       const dm = block.match(/data-path="([^"]+)"/);
@@ -77,7 +77,7 @@ export default async function handler(req, res) {
     });
 
     return res.json({ ok: true });
-  } catch (err: any) {
+  } catch (err) {
     console.error("Reorder API error:", err);
     return res
       .status(500)
