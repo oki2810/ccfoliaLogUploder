@@ -1,288 +1,342 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="ja">
-
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ココフォリアログアップローダー (CLU)</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <style>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ココフォリアログアップローダー (CCU)</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      #main-container {
+        width: 90%;
+        max-width: 700px;
+        margin: 0 auto;
+      }
     html {
       font-size: 100%;
-      font-family: Arial, Helvetica, sans-serif;
     }
-
-    #main-container {
-      width: 90%;
-      max-width: 700px;
-      margin: 0 auto;
-    }
-
-    #usageContent li,
-    #featureContent li {
-      line-height: 2;
-    }
-
-    @media (max-width: 578px) {
+    @media (max-width: 576px) {
       html {
         font-size: 86%;
       }
     }
+    #usageContent p,
+    #usageContent li {
+      line-height: 1.9;
+    }
+    @media (max-width: 578px) {
+      .responsive-frame {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .responsive-frame > .card-body {
+        padding: 0.5rem !important; /* 必要なら最低限の余白だけ確保 */
+      }
+    }
   </style>
-</head>
+  </head>
+  <body>
+    <div id="main-container" class="container py-5">
+      <h1 class="mb-4">ココフォリアログアップローダー (CCU)</h1>
+      <p>
+        ローカルの log.html を検索除外タグ付きで修正し、WEB上に限定公開できるツールです。
+      </p>
 
-<body>
-  <div id="main-container" class="container py-5">
-    <h1 class="mb-4">ココフォリアログアップローダー (CLU)</h1>
-    <p>
-      ローカルのlog.htmlを検索除外タグ付きで修正し、WEB上に限定公開できるツールです。
-    </p>
+      <ul class="nav nav-tabs mb-4" id="tabNav">
+        <li class="nav-item">
+          <button class="nav-link active" id="tabCCU" type="button">CCU</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" id="tabUsage" type="button">使い方</button>
+        </li>
+      </ul>
 
-    <ul class="nav nav-tabs mb-4" id="tabNav">
-      <li class="nav-item">
-        <button class="nav-link active" id="tabCCU" type="button">CLU</button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-link" id="tabUsage" type="button">使い方</button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-link" id="tabFeature" type="button">特徴</button>
-      </li>
-    </ul>
+      <div id="ccuContent">
 
-    <div id="ccuContent">
-
+      <!-- ① GitHub連携セクション -->
       <div class="card mb-4">
-        <div class="card-header">① GitHub連携</div>
+        <div class="card-header">① GitHub 連携</div>
         <div class="card-body">
+          <!-- 未連携時 -->
           <div id="authSection">
             <button id="githubConnectBtn" class="btn btn-dark">
-              GitHubと連携
+              GitHub と連携
             </button>
           </div>
 
-          <div id="loginPanel" class="align-items-center mt-2 mb-3" style="display: none;">
+          <!-- 連携済み時: ユーザー名＋解除ボタンを横並び -->
+          <div
+            id="loginPanel"
+            class="align-items-center mt-2 mb-3"
+            style="display: none;"
+          >
             <span id="loginInfo" class="me-2"></span>
-            <button id="githubDisconnectBtn" class="btn btn-outline-danger">
+            <button
+              id="githubDisconnectBtn"
+              class="btn btn-outline-danger"
+            >
               GitHub 連携解除
             </button>
           </div>
 
+          <!-- リポジトリ名入力＋初期設定ボタン＋ステータス -->
           <div id="repoSettings" style="display: none;">
             <div class="mb-3">
-              <input type="text" id="repoInput" class="form-control" placeholder="リポジトリ名" />
+              <input
+                type="text"
+                id="repoInput"
+                class="form-control"
+                placeholder="リポジトリ名"
+              />
             </div>
             <input type="hidden" id="pathInput" value="log/test.html" />
-            <button id="useExistingBtn" class="btn btn-outline-primary mb-2 me-2">
+            <button
+              id="useExistingBtn"
+              class="btn btn-outline-primary mb-2 me-2"
+            >
               既存リポジトリを使用
             </button>
-            <button id="createAndInitBtn" class="btn btn-success mb-2">
+            <button
+              id="createAndInitBtn"
+              class="btn btn-success mb-2"
+            >
               初期設定
             </button>
+            <!-- 完了メッセージ出力先 -->
             <div id="initStatus" class="mt-2"></div>
           </div>
         </div>
       </div>
 
+      <!-- ② HTML修正・アップロードセクション -->
       <div class="card mb-4">
         <div class="card-header">② HTML修正・アップロード</div>
         <div class="card-body">
           <div class="mb-3">
-            <label for="uploadHtml" class="form-label">修正したいHTMLをアップロード</label>
-            <input class="form-control" type="file" id="uploadHtml" accept=".html" />
+            <label for="uploadHtml" class="form-label"
+              >修正したいHTMLをアップロード</label
+            >
+            <input
+              class="form-control"
+              type="file"
+              id="uploadHtml"
+              accept=".html"
+            />
           </div>
           <div class="mb-3">
             <label for="filenameInput" class="form-label">シナリオ名</label>
-            <input type="text" id="filenameInput" class="form-control" placeholder="例: サンプルシナリオ" />
+            <input
+              type="text"
+              id="filenameInput"
+              class="form-control"
+              placeholder="例: サンプルシナリオ"
+            />
           </div>
           <div class="mb-3">
             <label for="linknameInput" class="form-label">リンク名</label>
-            <input type="text" id="linknameInput" class="form-control" pattern="[0-9A-Za-z]*" title="半角英数字のみ"
-              placeholder="例: sample-scenario" />
+            <input
+              type="text"
+              id="linknameInput"
+              class="form-control"
+              pattern="[0-9A-Za-z]*"
+              title="半角英数字のみ"
+              placeholder="例: samplescenario"
+            />
           </div>
-          <div class="row row-cols-2 row-cols-md-4 g-3">
-            <div class="col">
-              <button id="formatBtn" type="button" class="btn btn-secondary w-100">修正</button>
-            </div>
-            <div class="col">
-              <button id="githubUploadBtn" type="button" class="btn btn-primary w-100">GitHubにコミット</button>
-            </div>
-            <div class="col">
-              <button id="viewRepoBtn" type="button" class="btn btn-secondary w-100">GitHubを開く</button>
-            </div>
-            <div class="col">
-              <button id="viewProjectBtn" type="button" class="btn btn-secondary w-100">ログ一覧を開く</button>
-            </div>
-          </div>
-          <pre id="formattedOutput" class="mt-3 border p-3" style="height: 150px; overflow: auto;"></pre>
+<div class="row row-cols-2 row-cols-md-4 g-3">
+  <div class="col">
+    <button id="formatBtn" type="button" class="btn btn-secondary w-100">修正</button>
+  </div>
+  <div class="col">
+    <button id="githubUploadBtn" type="button" class="btn btn-primary w-100">GitHubにコミット</button>
+  </div>
+  <div class="col">
+    <button id="viewRepoBtn" type="button" class="btn btn-secondary w-100">GitHubを開く</button>
+  </div>
+  <div class="col">
+    <button id="viewProjectBtn" type="button" class="btn btn-secondary w-100">ログ一覧を開く</button>
+  </div>
+</div>
+          <pre
+            id="formattedOutput"
+            class="mt-3 border p-3"
+            style="height: 150px; overflow: auto;"
+          ></pre>
           <div id="githubStatus" class="mt-2"></div>
         </div>
+
       </div>
-    </div>
-
-    <div id="usageContent" style="display: none;">
-      <h2 class="card-title">使い方</h2>
-      <hr />
-      <h3 class="h5 mt-4">1. GitHubアカウントの準備</h3>
-      <ol>
-        <li>
-          <a href="https://github.com" target="_blank" rel="noopener">GitHub</a> にアクセスし、新規アカウントを作成します。
-          <ul>
-            <li>メールアドレスとパスワードを登録し、メール認証を済ませてください。</li>
-          </ul>
-        </li>
-      </ol>
-      <hr />
-      <h3 class="h5 mt-4">2. GitHubとツールの連携</h3>
-      <h4 class="h5 mt-4">初回の設定</h4>
-      <ol>
-        <li>本ツール画面で「GitHubと連携」ボタンをクリック。</li>
-        <li>GitHub側で認可画面が開くので、アクセスを許可します。</li>
-        <li>
-          初期設定画面が表示されたら任意のリポジトリ名を入力し、「初期設定」ボタンを押します。
-          <ul>
-            <li>リポジトリ名は何でもOK（例：<code>mypage</code>）</li>
-          </ul>
-        </li>
-        <li>
-          「初期設定が完了しました！」と出たら、その下にあるリンクをクリックしてGitHub側の設定画面へ移動。
-        </li>
-        <li>
-          「Build and deployment」セクションにある
-          <ul>
-            <li><strong>Branch</strong> の項目を <code>none</code> → <code>main</code> に変更</li>
-            <li><strong>Save</strong> ボタンで保存</li>
-          </ul>
-        </li>
-        <li>
-          「main」 「/(root) 」 「Save（グレー文字）」と表示されていれば設定完了。
-          <br>
-          <img src="pages.png" alt="pagesのスクリーンショット" class="img-fluid my-3 border">
-        </li>
-        <li>
-          現在上から二段目にあるタブ一覧で <strong>Setting</strong> にいるので、一番左の <strong>Code</strong> を開き、
-          <ul>
-            <li>
-              画面やや下、本のマークがついている <code>README</code> の右にある鉛筆マークをクリック
-              <br>
-              <img src="edit.png" alt="README編集のスクリーンショット" class="img-fluid my-3 border">
-            </li>
-            <li>
-              テキスト欄に <code>ok</code> と入力 → <strong>Commit Change</strong>を押します。<br>
-              ポップアップが表示されたら何も変更せず<strong>Commit Change</strong>を押してください。
-            </li>
-          </ul>
-        </li>
-        <li>CLUに戻ります。</li>
-      </ol>
-
-      <h4 class="h5 mt-5">2回目以降の設定</h4>
-      <ol>
-        <li>本ツール画面で以前に設定したリポジトリ名を入力。</li>
-        <li>「既存リポジトリを使用」ボタンを押します。</li>
-      </ol>
-      <hr />
-      <h3 class="h5 mt-4">3. HTMLファイルのアップロード</h3>
-      <ol>
-        <li>
-          修正したいHTMLファイルを選択。
-          <ul>
-            <li>
-              ココフォリア出力のHTMLの他、以下の外部ツールで加工したHTMLも利用可能です。
-              <ul>
-                <li>
-                  <a href="https://kanonn.chips.jp/converterV2/" target="_blank" rel="noopener">ココフォリアログ変換ツール</a><span class="fs-6">（Kanonn Yuduki様）</span>
-                </li>
-                <li>
-                  <a href="https://log-formatter.herokuapp.com/dark" target="_blank" rel="noopener">Ccfolia Log Formatter</a><span class="fs-6">（iemonNotAyataka様）</span>
-                </li>
-                <li>
-                  <a href="https://inouemoku.github.io/mochimochi/" target="_blank" rel="noopener">MochiMochi - ココフォリアログ修正ツール</a><span class="fs-6">（inouemoku様）</span>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-        <li class="mt-3">
-          シナリオ名（日本語可）とリンク名（半角英数字のみ）を入力し、「修正」ボタンを押します。
-        </li>
-        <li>
-          画面下部に修正済みデータが出力されるのを確認したら、「GitHubにコミット」ボタンでアップロード。
-        </li>
-        <li>
-          「ログ一覧ページを開く」リンクをクリックし、更新をかけて反映されていればアップロード完了。
-          <ul>
-            <li>アップロードには2～3分かかります。</li>
-          </ul>
-        </li>
-        <li>
-          ログ一覧ページをブックマークしておくことでいつでもログ一覧にアクセスできます。
-        </li>
-      </ol>
-      <hr />
-      <h3 class="h5 mt-4">4. GitHubからのメール通知をオフにする</h3>
-      <ol>
-        <li>
-          GitHub（<a href="https://github.com" target="_blank" rel="noopener">github.com</a>）にログインし、画面右上のプロフィール写真をクリック。
-        </li>
-        <li>
-          メニューから <strong>Settings</strong>（設定）をクリック。
-        </li>
-        <li>
-          左側のメニューから <strong>Notifications</strong>（通知）を選択。
-        </li>
-        <li>
-          「Email」になっている箇所のチェックを外す。
-        </li>
-      </ol>
-    </div>
-
-    <div id="featureContent" style="display: none;">
-      <div class="container py-4">
-        <h2 class="mb-4">CLUの特徴</h2>
-        <p><strong>CLU</strong>は、ココフォリアのログHTMLを<span class="text-success fw-bold">検索避け付きでWEB公開できる</span>ツールです。</p>
-        <p>従来のHTML形式（ココフォリアや整形ツールからのログ出力）では、</p>
-
-        <h5 class="mt-4">1.PC・スマホ両方での管理が煩雑</h5>
-        <ul>
-          <li><strong>PCとスマホ両方</strong>にログHTMLをダウンロードする必要がある</li>
-          <li>ログファイルが<strong>端末容量を圧迫</strong>する</li>
-          <li>数が増えるほど<strong>ファイル整理が面倒</strong>になる</li>
-        </ul>
-
-        <h5 class="mt-4">2.一部環境では整形ツールの機能が使えない</h5>
-        <ul>
-          <li><strong>「表示・非表示」</strong>などの機能が一部のブラウザや端末では正常に動作しないことがある</li>
-        </ul>
-        <p>といった問題がありました。</p>
-        <hr>
-
-        <p class="mt-4">CLUは<strong class="text-success">GitHub Pages</strong>を活用し、</p>
-        <ul>
-          <li><strong>WEB上</strong>にログHTMLをアップロード、<span class="text-danger">URLから簡単にアクセス可能</span></li>
-          <li><strong>検索避け（noindex）</strong>を適用し、<span class="text-danger">ネタバレやプライバシー</span>に配慮</li>
-          <li><span class="text-danger">誰でも無料</span>でログ専用の公開サイトを作成できる</li>
-          <li>スマホでもPCでもログにアクセスできる</li>
-          <li>notionなどの埋め込みに対応</li>
-        </ul>
-        <p>といった機能を実現しています。</p>
-
-        <hr>
-        <h4 class="mt-4">免責事項・お問い合わせ</h4>
-        <ul>
-          <li>本ツールは<strong>個人により開発</strong>された非公式ツールです。</li>
-          <li><strong>GitHub</strong>および<strong>ココフォリア</strong>、<strong>各種整形ツール</strong>とは一切関係がありません。</li>
-          <li>使用によって発生したいかなる損害にも、開発者は責任を負いかねます。</li>
-          <li>バグ報告や改善要望などありましたら、下記までご連絡ください。</li>
-        </ul>
-        <p><strong>Discord：</strong><code>sasami8882</code></p>
+      <!-- /#ccuContent -->
       </div>
+
+      <div id="usageContent" style="display: none;">
+        <div class="card mb-4 responsive-frame">
+        <div class="card-body">
+            <h5 class="card-title">使い方</h5>
+            <p>ここでは検索避けをした状態でログページを公開するアプリ、CCUの使い方を紹介します。</p>
+            <hr />
+
+            <h3 class="h5 mt-4">1. GitHubアカウントの準備</h3>
+            <ol>
+              <li>
+                <a href="https://github.com" target="_blank" rel="noopener"
+                  >GitHub</a
+                > にアクセスし、新規アカウントを作成します。
+                <ul>
+                  <li>
+                    メールアドレスとパスワードを登録し、メール認証を済ませてください。
+                  </li>
+                </ul>
+              </li>
+            </ol>
+            <hr />
+
+            <h3 class="h5 mt-4">2. GitHubとツールの連携</h3>
+            <h4 class="h6 mt-3">初回の設定</h4>
+            <ol>
+              <li>本ツール画面で「GitHubと連携」ボタンをクリック。</li>
+              <li>GitHub側で認可画面が開くので、アクセスを許可します。</li>
+              <li>
+                初期設定画面が表示されたら、任意のリポジトリ名を入力し、「初期設定」ボタンを押します。
+                <ul>
+                  <li>
+                    リポジトリ名は何でも OK（例：<code>mypage</code>）
+                  </li>
+                </ul>
+              </li>
+              <li>
+                「初期設定が完了しました！」と出たら、その下にあるリンクを
+                クリックしてGitHub側の設定画面へ移動。
+              </li>
+              <li>
+                「Build and deployment」セクションにある
+                <ul>
+                  <li>
+                    <strong>Branch</strong> の項目を <code>none</code> →
+                    <code>main</code> に変更
+                  </li>
+                  <li><strong>Save</strong> ボタンで保存</li>
+                </ul>
+              </li>
+              <li>
+                画面上部が「main ▼」 「 / (root) 」 「Save（グレー文字）」と表示されていれば設定完了です。
+              </li>
+              <li>
+                現在上から二段目にあるタブ一覧で<strong>Setting</strong>にいるので、一番左の<strong>Code</strong> を開き、
+                <ul>
+                  <li>画面やや下、本のマークがついている<code>README</code> の右にある鉛筆マークをクリックして</li>
+                  <li>
+                    テキスト欄に <code>ok</code> と入力 → <strong>Commit Change</strong>を押します。<br>ポップアップが表示されたら何も変更せず<strong>
+                      Commit Change</strong
+                    >を押してください。
+                  </li>
+                </ul>
+              </li>
+              <li>CCUに戻ります。</li>
+            </ol>
+            <h4 class="h6 mt-3">2回目以降の設定</h4>
+            <ol>
+              <li>本ツール画面で、以前に設定したリポジトリ名を入力。</li>
+              <li>「既存リポジトリを使用」ボタンを押すだけでOK。</li>
+            </ol>
+            <hr />
+
+            <h3 class="h5 mt-4">3. HTMLファイルのアップロード</h3>
+            <ol>
+              <li>
+                修正したいHTMLファイルを選択。
+                <ul>
+                  <li>
+                    ココフォリア標準出力のHTML、または以下の外部ツールで加工したHTMLも利用可。
+                    <ul>
+                      <li>
+                        <a
+                          href="https://kanonn.chips.jp/converterV2/"
+                          target="_blank"
+                          rel="noopener"
+                          >ココフォリアログ変換ツール</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          href="https://log-formatter.herokuapp.com/dark"
+                          target="_blank"
+                          rel="noopener"
+                          >Ccfolia Log Formatter</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          href="https://inouemoku.github.io/mochimochi/"
+                          target="_blank"
+                          rel="noopener"
+                          >MochiMochi - ココフォリアログ修正ツール</a
+                        >
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                シナリオ名（日本語可）とリンク名（半角英数字のみ）を入力し、「修正」ボタンを押します。
+              </li>
+              <li>
+                画面下部に修正済みデータが出力されるのを確認したら、「GitHubにコミット」ボタンでアップロード。
+              </li>
+              <li>
+                コミット後、公開まで約5分かかります。
+                <ul>
+                  <li>
+                    しばらく待ってから「ログ一覧ページを開く」リンクをクリックし、正常に反映されているか確認。
+                  </li>
+                </ul>
+              </li>
+              <li>
+                完了したログ一覧ページはブラウザのブックマークに登録しておくと、いつでもアクセスできます。
+              </li>
+            </ol>
+
+            <hr />
+
+            <h3 class="h5 mt-4">4. GitHubからのメール通知をオフにする</h3>
+            <ol>
+              <li>
+                GitHub（<a href="https://github.com" target="_blank" rel="noopener">github.com</a>）にログインし、画面右上のプロフィール写真をクリック。
+              </li>
+              <li>
+                メニューから <strong>Settings</strong>（設定）をクリック。
+              </li>
+              <li>
+                左側のメニューから <strong>Notifications</strong>（通知）を選択。
+              </li>
+              <li>
+                <strong>Email notification preferences</strong> の項目で、
+                <ul>
+                  <li>
+                    「Watching」「Participating」「Mention」など、受け取りたくない種類のチェックを外す。
+                  </li>
+                </ul>
+              </li>
+              <li>
+                ページ下部の <strong>Update notification settings</strong>（通知設定を更新）ボタンをクリックして保存。
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
     </div>
-  </div>
 
-  <script src="app.js"></script>
-  <script src="norobot.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-
+    <!-- アプリケーション JS -->
+    <script src="app.js"></script>
+    <!-- norobot.js (SEO除外スクリプト) -->
+    <script src="norobot.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>
