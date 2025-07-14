@@ -1,6 +1,8 @@
 import cookie from "cookie";
+import applyCors from "../lib/cors.js";
 
 export default function handler(req, res) {
+  if (applyCors(req, res)) return;
   res.setHeader("Set-Cookie", [
     cookie.serialize("access_token", "", {
       httpOnly: true,

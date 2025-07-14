@@ -1,6 +1,8 @@
 import { Octokit } from "@octokit/rest";
+import applyCors from "../lib/cors.js";
 
 export default async function handler(req, res) {
+  if (applyCors(req, res)) return;
   if (req.method !== "POST")
     return res.status(405).json({ ok: false, error: "Method Not Allowed" });
 

@@ -1,8 +1,10 @@
 // api/auth/github.js
 import crypto from "crypto";
 import cookie from "cookie";
+import applyCors from "../../lib/cors.js";
 
 export default function handler(req, res) {
+  if (applyCors(req, res)) return;
   const state = crypto.randomBytes(16).toString("hex");
   res.setHeader(
     "Set-Cookie",

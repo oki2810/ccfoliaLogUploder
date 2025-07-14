@@ -1,7 +1,9 @@
 // api/auth/github-callback.js
 import cookie from "cookie";
+import applyCors from "../../lib/cors.js";
 
 export default async function handler(req, res) {
+  if (applyCors(req, res)) return;
   const { code, state } = req.query;
 
   // ——— デバッグログ: Cookie ヘッダを丸ごと出す ———

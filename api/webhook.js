@@ -1,9 +1,11 @@
 import crypto from "crypto";
 import { Octokit } from "@octokit/rest";
+import applyCors from "../lib/cors.js";
 
 export const config = { api: { bodyParser: false } };
 
 export default async function handler(req, res) {
+  if (applyCors(req, res)) return;
   const sig = req.headers["x-hub-signature-256"] || "";
   const hmac = crypto.createHmac("sha256", process.env.WEBHOOK_SECRET);
   hmac.update(req.body);
