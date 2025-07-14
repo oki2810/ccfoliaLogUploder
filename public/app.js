@@ -233,9 +233,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		githubStatus.textContent = "送信中…";
 		try {
-			const formData = new FormData();
-			formData.append("htmlFile", fileInput.files[0]);
-			formData.append("owner", owner);
+                        const formData = new FormData();
+                        formData.append("htmlFile", uploadHtml.files[0]);
+                        formData.append("owner", ownerName);
 			formData.append("repo", repo);
 			formData.append("path", path);
 			formData.append("linkText", linkText);
