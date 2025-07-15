@@ -1,10 +1,16 @@
 import fs from "fs";
 import * as nodePath from "path";
 import multer from "multer";
-import { Octokit } from "@octokit/rest";
+import {
+  Octokit
+} from "@octokit/rest";
 import Joi from "joi";
 
-const upload = multer({ limits: { fileSize: 2 * 1024 * 1024 } });
+const upload = multer({
+  limits: {
+    fileSize: 2 * 1024 * 1024
+  }
+});
 const schema = Joi.object({
   owner: Joi.string().required(),
   repo: Joi.string().required(),
@@ -31,7 +37,11 @@ const DEFAULT_INDEX = `<!DOCTYPE html>
 </body>
 </html>`;
 
-export const config = { api: { bodyParser: false } };
+export const config = {
+  api: {
+    bodyParser: false
+  }
+};
 
 export default async function handler(req, res) {
   // CSRF は Vercel Functions では自前実装になるので省略
@@ -39,45 +49,65 @@ export default async function handler(req, res) {
     (req.headers.cookie || "").split("; ").map(c => c.split("="))
   );
   const token = cookies.access_token;
-  if (!token) return res.status(401).json({ ok: false, error: "Unauthorized" });
+  if (!token) return res.status(401).json({
+    ok: false,
+    error: "Unauthorized"
+  });
 
   // マルチパート解析
   await new Promise((ok, ng) => {
     upload.single("htmlFile")(req, res, err => (err ? ng(err) : ok()));
   });
-  if (!req.file) return res.status(400).json({ ok: false, error: "No file" });
+  if (!req.file) return res.status(400).json({
+    ok: false,
+    error: "No file"
+  });
 
-const { owner, repo, path, linkText, scenarioName } = await schema.validateAsync(req.body);
-  const octokit = new Octokit({ auth: token });
+  const {
+    owner,
+    repo,
+    path,
+    linkText,
+    scenarioName
+  } = await schema.validateAsync(req.body);
+  const octokit = new Octokit({
+    auth: token
+  });
 
   // 1) 新規ログデータ
   const fileB64 = req.file.buffer.toString("base64");
-  const { data: logBlob } = await octokit.git.createBlob({
+  const {
+    data: logBlob
+  } = await octokit.git.createBlob({
     owner,
     repo,
     content: fileB64,
     encoding: "base64",
   });
 
-// 2) index.html を取得（無ければテンプレート作成、空ならテンプレート置換）
-let html;
+  // 2) index.html を取得（無ければテンプレート作成、空ならテンプレート置換）
+  let html;
 
-try {
-  const idx = await octokit.repos.getContent({ owner, repo, path: "index.html" });
-  html = Buffer.from(idx.data.content, "base64").toString("utf8");
+  try {
+    const idx = await octokit.repos.getContent({
+      owner,
+      repo,
+      path: "index.html"
+    });
+    html = Buffer.from(idx.data.content, "base64").toString("utf8");
 
-  // ファイルはあるけど空っぽ（スペースだけ）だったらテンプレートに切り替え
-  if (!html.trim()) {
-    html = DEFAULT_INDEX;
+    // ファイルはあるけど空っぽ（スペースだけ）だったらテンプレートに切り替え
+    if (!html.trim()) {
+      html = DEFAULT_INDEX;
+    }
+  } catch (err) {
+    if (err.status === 404) {
+      // ファイル自体がないときはテンプレートをまるっと流用
+      html = DEFAULT_INDEX;
+    } else {
+      throw err;
+    }
   }
-} catch (err) {
-  if (err.status === 404) {
-    // ファイル自体がないときはテンプレートをまるっと流用
-    html = DEFAULT_INDEX;
-  } else {
-    throw err;
-  }
-}
 
   const newItem = `<li class="list-group-item"><span class="text-muted">${scenarioName}</span><a href="${path}" class="ms-2">${linkText}</a></li>`;
   if (html.match(/<ul[^>]+id="generatedList"/)) {
@@ -92,8 +122,27 @@ try {
     );
   }
 
+  // API 呼び出し先の base URL（環境変数かデフォルト値）
+  const apiBase =
+    process.env.NEXT_PUBLIC_API_BASE_URL || "https://clu-dev.vercel.app";
+  const configScript = `<script>
+window.CCU_CONFIG = {
+owner: "${owner}",
+repo:  "${repo}",
+apiBase: "${apiBase}"
+};
+</script>`;
+  const loaderScript = `<script src="loglist.js"></script>`;
+
+  html = html.replace(
+    /<\/body>/i,
+    `${configScript}\n${loaderScript}\n</body>`
+  );
+
   // 3) index.html ブロブ作成
-  const { data: indexBlob } = await octokit.git.createBlob({
+  const {
+    data: indexBlob
+  } = await octokit.git.createBlob({
     owner,
     repo,
     content: Buffer.from(html, "utf8").toString("base64"),
@@ -104,13 +153,19 @@ try {
   let needNorobot = false;
   let norobotBlob = null;
   try {
-    await octokit.repos.getContent({ owner, repo, path: "norobot.js" });
+    await octokit.repos.getContent({
+      owner,
+      repo,
+      path: "norobot.js"
+    });
   } catch (err) {
     if (err.status === 404) {
       needNorobot = true;
       const scriptPath = nodePath.join(process.cwd(), "public", "norobot.js");
       const scriptB64 = fs.readFileSync(scriptPath).toString("base64");
-      const { data } = await octokit.git.createBlob({
+      const {
+        data
+      } = await octokit.git.createBlob({
         owner,
         repo,
         content: scriptB64,
@@ -123,23 +178,41 @@ try {
   }
 
   // 4) 単一コミットとしてアップロード
-  const { data: repoInfo } = await octokit.repos.get({ owner, repo });
+  const {
+    data: repoInfo
+  } = await octokit.repos.get({
+    owner,
+    repo
+  });
   const branch = repoInfo.default_branch;
-  const { data: refData } = await octokit.git.getRef({
+  const {
+    data: refData
+  } = await octokit.git.getRef({
     owner,
     repo,
     ref: `heads/${branch}`,
   });
   const baseCommitSha = refData.object.sha;
-  const { data: baseCommit } = await octokit.git.getCommit({
+  const {
+    data: baseCommit
+  } = await octokit.git.getCommit({
     owner,
     repo,
     commit_sha: baseCommitSha,
   });
 
-  const treeItems = [
-    { path, mode: "100644", type: "blob", sha: logBlob.sha },
-    { path: "index.html", mode: "100644", type: "blob", sha: indexBlob.sha },
+  const treeItems = [{
+      path,
+      mode: "100644",
+      type: "blob",
+      sha: logBlob.sha
+    },
+    {
+      path: "index.html",
+      mode: "100644",
+      type: "blob",
+      sha: indexBlob.sha
+    },
   ];
   if (needNorobot && norobotBlob) {
     treeItems.push({
@@ -150,7 +223,9 @@ try {
     });
   }
 
-  const { data: newTree } = await octokit.git.createTree({
+  const {
+    data: newTree
+  } = await octokit.git.createTree({
     owner,
     repo,
     base_tree: baseCommit.tree.sha,
@@ -160,7 +235,9 @@ try {
   let commitMessage = `Add ${path}`;
   if (needNorobot) commitMessage += ", add norobot.js";
   commitMessage += " and update index.html";
-  const { data: newCommit } = await octokit.git.createCommit({
+  const {
+    data: newCommit
+  } = await octokit.git.createCommit({
     owner,
     repo,
     message: commitMessage,
@@ -175,5 +252,7 @@ try {
     sha: newCommit.sha,
   });
 
-  res.json({ ok: true });
+  res.json({
+    ok: true
+  });
 }
